@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="/css/style.css">
   
 
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=62698191" charset="UTF-8"></script>
+
 </head>
 
 <body>
@@ -125,7 +127,7 @@
 <p>因为php连接mysql当前有两种连接方式，libmysql和mysqlnd（推荐）。</p>
 <h2 id="首先libmysql"><a href="#首先libmysql" class="headerlink" title="首先libmysql"></a><em>首先libmysql</em></h2><p>在libmysql这个底层库中，提供了MYSQL_OPT_CONNECT_TIMEOUT、MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME设置项的，并且提供了相关的API。</p>
 <p>源码位置</p>
-<figure class="highlight plain"><figcaption><span>3020行``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。</div><div class="line"></div><div class="line">源码位置：</div><div class="line"></div><div class="line">```mysql-VERSION/include/mysql.h 160行</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><figcaption><span>3020行``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。但是mysql_pdo是写死的，所以没有任何办法设置MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME。</div><div class="line"></div><div class="line">源码位置：</div><div class="line"></div><div class="line">```mysql-VERSION/include/mysql.h 160行</div></pre></td></tr></table></figure>
 <p>但是MYSQL_OPT_READ_TIMEOUT在mysql5.6版本以及之前（我们线上用的5.6），这个参数有以下三个限制。</p>
 <ol>
 <li>只能在TCP／IP协议下工作</li>
@@ -153,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2017/06/04/php-mysql-timeout/" data-id="cj3ixqb01003h1r8ggyd90cs1" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2017/06/04/php-mysql-timeout/" data-id="cj474icjz003ytp8g44memk5x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -200,7 +202,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2017/04/10/mac-php-version/" data-id="cj3ixqb03003m1r8ggzpmdd4a" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2017/04/10/mac-php-version/" data-id="cj474icjx003ttp8g5juqsq1q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/brew/">brew</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mac/">mac</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -245,7 +247,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/09/26/如何将Linux命令的结果作为下一个命令的参数/" data-id="cj3ixqb08003q1r8gyrvn2zx3" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/09/26/如何将Linux命令的结果作为下一个命令的参数/" data-id="cj474icjw003stp8gy29mty60" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -293,7 +295,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/08/25/PHP-枚举类型/" data-id="cj3ixqb03003l1r8ga0eyp6xb" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/08/25/PHP-枚举类型/" data-id="cj474icjt003otp8g9p3lv48g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/枚举类型/">枚举类型</a></li></ul>
@@ -349,7 +351,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/08/24/Personal-Growth/" data-id="cj3ixqazy003d1r8gikrzo79f" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/08/24/Personal-Growth/" data-id="cj474icjr003mtp8g56ochi3e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/个人成长/">个人成长</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/人生经验/">人生经验</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/李笑来/">李笑来</a></li></ul>
@@ -393,7 +395,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/08/23/文章是如何写出来的/" data-id="cj3ixqazx003a1r8g1pvabc7i" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/08/23/文章是如何写出来的/" data-id="cj474icjp003itp8g6lrsaq3v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/个人成长/">个人成长</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/写文章/">写文章</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/李笑来/">李笑来</a></li></ul>
@@ -444,7 +446,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/08/23/Personal-Growth/" data-id="cj3ixqb00003g1r8gqr9myae2" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/08/23/Personal-Growth/" data-id="cj474icjn003gtp8gmugf6mdb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/克服焦虑/">克服焦虑</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/写作/">写作</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/李笑来/">李笑来</a></li></ul>
@@ -492,7 +494,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/07/24/PHP面试知识点/" data-id="cj3ixqazs00301r8g4fmbkyvs" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/07/24/PHP面试知识点/" data-id="cj474icjk0039tp8gxz6765oi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
@@ -556,7 +558,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/07/23/《恋爱的犀牛》/" data-id="cj3ixqazu00321r8gmk86n0ro" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/07/23/《恋爱的犀牛》/" data-id="cj474icjj0034tp8gux2s4jzo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/话剧/">话剧</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/音乐/">音乐</a></li></ul>
@@ -620,7 +622,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/07/23/MySQL-datetime-vs-timestamp/" data-id="cj3ixqazv00351r8g1ihj90jm" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/07/23/MySQL-datetime-vs-timestamp/" data-id="cj474icji0031tp8gvrbn751i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mysql/">Mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>

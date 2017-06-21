@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://petrie.github.com/2017/06/04/php-mysql-timeout/index.html">
 <meta property="og:site_name" content="Petrie's Home">
 <meta property="og:description" content="本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。 一、什么是‘mysql’、‘mysqli’、‘mysql_pdo ‘、’mysqlnd‘扩展当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：  PHP的MySQL扩展 PHP的m">
-<meta property="og:updated_time" content="2017-06-04T16:40:11.000Z">
+<meta property="og:updated_time" content="2017-06-04T17:00:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP设置连接mysql超时时间">
 <meta name="twitter:description" content="本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。 一、什么是‘mysql’、‘mysqli’、‘mysql_pdo ‘、’mysqlnd‘扩展当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：  PHP的MySQL扩展 PHP的m">
@@ -27,6 +27,8 @@
   
   <link rel="stylesheet" href="/css/style.css">
   
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=62698191" charset="UTF-8"></script>
 
 </head>
 
@@ -128,7 +130,7 @@
 <p>因为php连接mysql当前有两种连接方式，libmysql和mysqlnd（推荐）。</p>
 <h2 id="首先libmysql"><a href="#首先libmysql" class="headerlink" title="首先libmysql"></a><em>首先libmysql</em></h2><p>在libmysql这个底层库中，提供了MYSQL_OPT_CONNECT_TIMEOUT、MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME设置项的，并且提供了相关的API。</p>
 <p>源码位置</p>
-<figure class="highlight plain"><figcaption><span>3020行``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。</div><div class="line"></div><div class="line">源码位置：</div><div class="line"></div><div class="line">```mysql-VERSION/include/mysql.h 160行</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><figcaption><span>3020行``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。但是mysql_pdo是写死的，所以没有任何办法设置MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME。</div><div class="line"></div><div class="line">源码位置：</div><div class="line"></div><div class="line">```mysql-VERSION/include/mysql.h 160行</div></pre></td></tr></table></figure>
 <p>但是MYSQL_OPT_READ_TIMEOUT在mysql5.6版本以及之前（我们线上用的5.6），这个参数有以下三个限制。</p>
 <ol>
 <li>只能在TCP／IP协议下工作</li>
@@ -156,7 +158,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2017/06/04/php-mysql-timeout/" data-id="cj3ixqb01003h1r8ggyd90cs1" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2017/06/04/php-mysql-timeout/" data-id="cj474icjz003ytp8g44memk5x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
