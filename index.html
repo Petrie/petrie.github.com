@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next gemini use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -75,7 +75,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '6.0.6',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: false,
@@ -248,25 +248,6 @@
   
 
   
-    
-
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
-  
 
   
 </nav>
@@ -285,6 +266,9 @@
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
+          
+            
+
           
           <div id="content" class="content">
             
@@ -515,8 +499,7 @@
 
       
         
-          
-            <p>本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。</p>
+          <p>本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。</p>
 <h1 id="一、‘mysql’、‘mysqli’、‘mysql-pdo-‘、’mysqlnd‘扩展"><a href="#一、‘mysql’、‘mysqli’、‘mysql-pdo-‘、’mysqlnd‘扩展" class="headerlink" title="一、‘mysql’、‘mysqli’、‘mysql_pdo ‘、’mysqlnd‘扩展"></a>一、‘mysql’、‘mysqli’、‘mysql_pdo ‘、’mysqlnd‘扩展</h1><p>当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：</p>
 <ul>
 <li>PHP的MySQL扩展</li>
@@ -528,54 +511,13 @@
 <h2 id="什么是PHP的mysql-pdo扩展"><a href="#什么是PHP的mysql-pdo扩展" class="headerlink" title="什么是PHP的mysql_pdo扩展"></a><em>什么是PHP的mysql_pdo扩展</em></h2><p><em>PHP 数据对象</em> （PDO） 扩展为PHP访问数据库定义了一个轻量级的一致接口。实现 PDO 接口的每个数据库驱动可以公开具体数据库的特性作为标准扩展功能。 注意利用 PDO 扩展自身并不能实现任何数据库功能；必须使用一个 具体数据库的 PDO 驱动 来访问数据库服务。</p>
 <p>PDO 提供了一个 <em>数据访问</em> 抽象层，这意味着，不管使用哪种数据库，都可以用相同的函数（方法）来查询和获取数据。 PDO <em>不</em>提供 <em>数据库</em> 抽象层；它不会重写 SQL，也不会模拟缺失的特性。如果需要的话，应该使用一个成熟的抽象层。</p>
 <p>从 PHP 5.1 开始附带了 PDO，在 PHP 5.0 中是作为一个 PECL 扩展使用。 PDO 需要PHP 5 核心的新 OO 特性，因此不能在较早版本的 PHP 上运行。</p>
-<h2 id="什么是PHP的mysqli扩展"><a href="#什么是PHP的mysqli扩展" class="headerlink" title="什么是PHP的mysqli扩展"></a>什么是PHP的mysqli扩展</h2><p><em>mysqli</em>扩展，我们有时称之为MySQL<em>增强</em>扩展，可以用于使用 MySQL4.1.3或更新版本中新的高级特性。<em>mysqli</em>扩展在PHP 5及以后版本中包含。</p>
-<p><em>mysqli</em>扩展有一系列的优势，相对于<em>mysql</em>扩展的提升主要有：</p>
-<ul>
-<li>面向对象接口</li>
-<li>prepared语句支持（译注：关于prepare请参阅mysql相关文档）</li>
-<li>多语句执行支持</li>
-<li>事务支持</li>
-<li>增强的调试能力</li>
-<li>嵌入式服务支持</li>
-</ul>
-<h2 id="什么是PHP的mysqlnd扩展"><a href="#什么是PHP的mysqlnd扩展" class="headerlink" title="什么是PHP的mysqlnd扩展"></a><em>什么是PHP的mysqlnd扩展</em></h2><p><em>为了与MySQL数据库服务端进行交互，</em>mysql<em>扩展，</em>mysqli<em>扩展， PDO MySQL驱动都使用了实现了必要的协议的底层库。以前，可用的库只有MySQL客户端库和</em>libmysql<em>。</em></p>
-<p>然而，<em>libmysql</em>包含的接口没有针对与PHP的应用交互进行优化，<em>libmysql</em> 是早期为C应用程序设计的。基于这个原因，MySQL Native驱动<em>mysqlnd</em>，作为<em>libmysql</em>的一个 针对PHP应用的修改版本被开发。</p>
-<p><em>mysql</em>，<em>mysqli</em>以及PDO Mysql驱动都可以各自配置使用 <em>libmysql</em>或者<em>mysqlnd</em>。<em>mysqlnd</em>作为一个专门设计 用于PHP系统的库，它在内存和速度上都比<em>libmysql</em>有很大提升。非常希望你去尝试这些提升。</p>
-<h1 id="二、如何设置php连接mysql的超时时间"><a href="#二、如何设置php连接mysql的超时时间" class="headerlink" title="二、如何设置php连接mysql的超时时间"></a>二、如何设置php连接mysql的超时时间</h1><p>php连接mysql的超时可以分为三种：</p>
-<ol>
-<li>连接超时</li>
-<li>读超时</li>
-<li>写超时</li>
-</ol>
-<p>因为php连接mysql当前有两种连接方式，libmysql和mysqlnd（推荐）。</p>
-<h2 id="首先libmysql"><a href="#首先libmysql" class="headerlink" title="首先libmysql"></a><em>首先libmysql</em></h2><p>在libmysql这个底层库中，提供了MYSQL_OPT_CONNECT_TIMEOUT、MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME设置项的，并且提供了相关的API。</p>
-<p>源码位置</p>
-<figure class="highlight plain"><figcaption><span>3020行``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。但是mysql_pdo是写死的，所以没有任何办法设置MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME。</div><div class="line"></div><div class="line">源码位置：</div><div class="line"></div><div class="line">```mysql-VERSION/include/mysql.h 160行</div></pre></td></tr></table></figure>
-<p>但是MYSQL_OPT_READ_TIMEOUT在mysql5.6版本以及之前（我们线上用的5.6），这个参数有以下三个限制。</p>
-<ol>
-<li>只能在TCP／IP协议下工作</li>
-<li>MySQL server版本必须大于5.1.2</li>
-<li>只能在windows下生效。</li>
-</ol>
-<h2 id="其次是mysqlnd"><a href="#其次是mysqlnd" class="headerlink" title="其次是mysqlnd"></a><em>其次是mysqlnd</em></h2><p>对于libmysql和mysqlnd来讲，他们都是mysql、mysqli、mysqlpdo的底层库，这三个扩展才是对外暴露api的，所以说，他们对于这三种超时的支持，从代码层面是一样的。</p>
-<p>但是对于<strong>MYSQL_OPT_READ_TIMEOUT</strong>，mysqlnd在php.ini层面多处配置</p>
-<p><code>mysqlnd.net_read_timeout</code></p>
-<p>这个配置会在执行耗时较长的sql时生效，并且报错“2006-MySQL Server has gone away”。</p>
-<p>这个参数和libmysql的MYSQL_OPT_READ_TIMEOUT是极为相似的。但是MYSQL_OPT_READ_TIMEOUT这个参数是有使用场景的，上一小结已经阐述。</p>
-<p>MYSQL_OPT_CONNECT_TIMEOUT和MYSQL_OPT_WRITE_TIME和libmysql是相同的。</p>
-<h1 id="总而言之"><a href="#总而言之" class="headerlink" title="总而言之"></a><em>总而言之</em></h1><p>推荐方案</p>
-<ul>
-<li>使用mysqlnd</li>
-<li>配置 mysqlnd.net_read_time </li>
-</ul>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="http://fendou.org/post/2011/05/06/mysql-communication-protocols/" target="_blank" rel="external">mysql支持的四种协议</a></li>
-<li><a href="blog.csdn.net/heiyeshuwu/article/details/5869813">MYSQL_OPT_READ_TIMEOUT设置</a></li>
-<li><a href="http://php.net/manual/zh/mysqlnd.config.php#ini.mysqlnd.net-read-timeout" target="_blank" rel="external">mysqlnd.net-read-time官方解释</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysql-options.html" target="_blank" rel="external">MYSQL_OPT_CONNECT/READ/WRITE_TIMEOUT官方解释</a></li>
-</ul>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/04/php-mysql-timeout/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2169,7 +2111,7 @@
 
 
 
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.6</div>
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.6</div>
 
 
 
@@ -2258,6 +2200,13 @@
 
   
   
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.6"></script>
+
+
 
   
 
