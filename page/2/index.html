@@ -23,7 +23,6 @@
   <link rel="stylesheet" href="/css/style.css">
   
 
-  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=62698191" charset="UTF-8"></script>
 
 </head>
 
@@ -67,6 +66,70 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-MySQL-datetime-vs-timestamp" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/23/MySQL-datetime-vs-timestamp/" class="article-date">
+  <time datetime="2016-07-23T05:03:01.000Z" itemprop="datePublished">2016-07-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mysql/">Mysql</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/23/MySQL-datetime-vs-timestamp/">MySQL datetime vs timestamp</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="MySQL-时间类型最佳实践"><a href="#MySQL-时间类型最佳实践" class="headerlink" title="MySQL 时间类型最佳实践"></a>MySQL 时间类型最佳实践</h2><p>通常建立数据库表的时，最常出现的两个字段是，数据的创建时间和更新时间。这篇文章为大家整理出关于这两个字段数据类型选择（timestamp vs datetime）的推荐实践。</p>
+<p>首先介绍下两种数据类型的试用场景</p>
+<h3 id="timestamp"><a href="#timestamp" class="headerlink" title="timestamp"></a>timestamp</h3><p>timestamp通常用来追踪数据记录的变化时间，通常它被设置成跟着字段的更新而更新 <code>DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</code> 。如果你只是想存储某个具体的时间值，datetime字段更合适。</p>
+<p>它具有以下特点</p>
+<ol>
+<li>它以UTC时间格式存储</li>
+<li>可以由Mysql自动初始化和更新</li>
+<li>可存储范围 <code>1970-01-01 00:00:01 UTC</code> to <code>2038-01-19 03:14:07 UTC</code></li>
+</ol>
+<h3 id="datetime"><a href="#datetime" class="headerlink" title="datetime"></a>datetime</h3><p>datetime字段可以很方便的通过<code>SELECT UNIX_TIMESTAMP(my_datetime)</code> 转换为Linux 时间戳。</p>
+<p>它具有以下特点</p>
+<ol>
+<li>存储内容，所存即所得</li>
+<li>可存储范围<code>1000-01-01 00:00:00</code> to <code>9999-12-31 23:59:59</code></li>
+<li>可以指定日和月字段为0值</li>
+<li>某些情况下可以设置默认值now()。但是此种方式并不推荐</li>
+</ol>
+<h4 id="以上"><a href="#以上" class="headerlink" title="以上"></a>以上</h4><p>实践一</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> ts (</div><div class="line">    <span class="keyword">id</span> <span class="built_in">INT</span> AUTO_INCREMENT PRIMARY <span class="keyword">KEY</span>,</div><div class="line">    title <span class="built_in">VARCHAR</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line">    created_at DATETIME ,</div><div class="line">    changed_at <span class="keyword">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<p>实践一的优点</p>
+<p>1.数据库相关操作不需要关心changed_at字段的更新，MySQL会自动在数据变动的时候将此字段自动更新为当前时间</p>
+<p>(the end)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://petrie.github.com/2016/07/23/MySQL-datetime-vs-timestamp/" data-id="cjf0m03qk0034h38grnedyxq7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mysql/">Mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Mac下“-bashrc”不生效" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/06/29/Mac下“-bashrc”不生效/" class="article-date">
@@ -100,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/29/Mac下“-bashrc”不生效/" data-id="cj474icjg002ztp8gf834y8vf" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/29/Mac下“-bashrc”不生效/" data-id="cjf0m03qg0031h38g8774s3g3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bashrc/">bashrc</a></li></ul>
@@ -160,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/29/Kafka-server安装教程/" data-id="cj474icjf002vtp8gujxbx4il" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/29/Kafka-server安装教程/" data-id="cjf0m03qe002zh38gns270uzy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/消息队列/">消息队列</a></li></ul>
@@ -203,7 +266,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/28/Git回到未来—时间旅行一/" data-id="cj474icj8002mtp8g1ixwarj4" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/28/Git回到未来—时间旅行一/" data-id="cjf0m03q8002ph38gw4eprm0m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/版本管理/">版本管理</a></li></ul>
@@ -246,7 +309,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/28/GIT反转提交/" data-id="cj474icj7002ktp8gig2m6xz2" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/28/GIT反转提交/" data-id="cjf0m03q6002lh38g0p8o3d6n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GIT/">GIT</a></li></ul>
@@ -291,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/28/打开CSV，清除科学计数法/" data-id="cj474icjf002utp8gkuoz2t35" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/28/打开CSV，清除科学计数法/" data-id="cjf0m03qc002vh38gdjslol8h" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csv/">csv</a></li></ul>
@@ -338,7 +401,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/28/curl调用上传文件接口/" data-id="cj474icjc002qtp8g2i7m6a5f" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/28/curl调用上传文件接口/" data-id="cjf0m03qb002uh38gyaqdprr3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/curl/">curl</a></li></ul>
@@ -384,7 +447,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/28/Nignx-PHP中HTTP请求返回502/" data-id="cj474icjb002ptp8g1ju4qv2c" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/28/Nignx-PHP中HTTP请求返回502/" data-id="cjf0m03q9002qh38gtljeut9j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/502/">502</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php-fpm/">php-fpm</a></li></ul>
@@ -449,7 +512,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/24/3分钟读完《学会提问》/" data-id="cj474icj4002etp8g0wupog7m" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/24/3分钟读完《学会提问》/" data-id="cjf0m03q3002hh38gw672crnc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/提问/">提问</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/沟通交流/">沟通交流</a></li></ul>
@@ -519,62 +582,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/24/zimbardo-time-psychology/" data-id="cj474icj5002htp8g0244zeb1" class="article-share-link">Share</a>
+      <a data-url="http://petrie.github.com/2016/06/24/zimbardo-time-psychology/" data-id="cjf0m03q5002kh38gdiq4wug0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/3分钟读完/">3分钟读完</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/心理学/">心理学</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/时间管理/">时间管理</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-shell-for" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/06/23/shell-for/" class="article-date">
-  <time datetime="2016-06-23T07:14:34.000Z" itemprop="datePublished">2016-06-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/shell/">shell</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/shell-for/">shell命令行for语句</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>很久就想写一篇关于shell的for语法的博客了。预谋了很久，今天终于提笔<br>核心语法<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> `ls`;<span class="keyword">do</span> <span class="built_in">echo</span> <span class="variable">$i</span>;<span class="keyword">done</span>;</div></pre></td></tr></table></figure></p>
-<p>常见场景：</p>
-<blockquote>
-<p>查询一组host对应的IP</p>
-</blockquote>
-<p>for计数和shell的四则运算<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>((i=1;i&lt;=10;i++));<span class="keyword">do</span> <span class="built_in">echo</span> $(expr <span class="variable">$i</span> \* 4);<span class="keyword">done</span></div></pre></td></tr></table></figure></p>
-<p>for计数2<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> $(seq 10)</div></pre></td></tr></table></figure></p>
-<p>for循环命令执行结果<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> `ls`</div></pre></td></tr></table></figure></p>
-<p>或者<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> $(ls)</div></pre></td></tr></table></figure></p>
-<p>for循环数组变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr=(1 2 3 4);<span class="keyword">for</span> i <span class="keyword">in</span> <span class="variable">$&#123;arr[@]&#125;</span>;<span class="keyword">do</span> <span class="built_in">echo</span> <span class="variable">$i</span>;<span class="keyword">done</span>;</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://petrie.github.com/2016/06/23/shell-for/" data-id="cj474icj0002btp8gynl1e6pp" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/for/">for</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/">shell</a></li></ul>
 
     </footer>
   </div>
@@ -625,7 +636,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/10/">October 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/10/">October 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a></li></ul>
     </div>
   </div>
 
@@ -636,6 +647,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/03/21/laravel-ioc/">laravel-ioc</a>
+          </li>
         
           <li>
             <a href="/2017/06/04/php-mysql-timeout/">PHP设置连接mysql超时时间</a>
@@ -653,10 +668,6 @@
             <a href="/2016/08/25/PHP-枚举类型/">PHP 枚举类型</a>
           </li>
         
-          <li>
-            <a href="/2016/08/24/Personal-Growth/">个人成长</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -669,10 +680,11 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 Petrie<br>
+      &copy; 2018 Petrie<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=62698191" charset="UTF-8"></script>
 </footer>
     </div>
     <nav id="mobile-nav">
