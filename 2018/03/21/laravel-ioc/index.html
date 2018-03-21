@@ -99,17 +99,17 @@
 
 
 
-  <meta name="description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件 ###准备工作###在家目录下新建测试目录1mkdir ~/test-laravel-ioc &amp;amp;&amp;amp; cd &amp;quot;$_&amp;quot; 下载container源码1composer require illuminate/container 新建测">
+  <meta name="description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
 <meta name="keywords" content="php,laravel,ioc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何独立的使用Laravel的IOC功能">
 <meta property="og:url" content="http://petrie.github.com/2018/03/21/laravel-ioc/index.html">
 <meta property="og:site_name" content="Petrie's Home">
-<meta property="og:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件 ###准备工作###在家目录下新建测试目录1mkdir ~/test-laravel-ioc &amp;amp;&amp;amp; cd &amp;quot;$_&amp;quot; 下载container源码1composer require illuminate/container 新建测">
-<meta property="og:updated_time" content="2018-03-21T09:45:25.000Z">
+<meta property="og:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
+<meta property="og:updated_time" content="2018-03-21T09:47:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何独立的使用Laravel的IOC功能">
-<meta name="twitter:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件 ###准备工作###在家目录下新建测试目录1mkdir ~/test-laravel-ioc &amp;amp;&amp;amp; cd &amp;quot;$_&amp;quot; 下载container源码1composer require illuminate/container 新建测">
+<meta name="twitter:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
 
 
 
@@ -404,7 +404,9 @@
 
       
         <p>Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件</p>
-<p>###准备工作###<br>在家目录下新建测试目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir ~/test-laravel-ioc &amp;&amp; cd &quot;$_&quot;</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>###准备工作###</p>
+<p>在家目录下新建测试目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir ~/test-laravel-ioc &amp;&amp; cd &quot;$_&quot;</div></pre></td></tr></table></figure></p>
 <p>下载container源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer require illuminate/container</div></pre></td></tr></table></figure></p>
 <p>新建测试文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">touch container01.php &amp;&amp; vim &quot;$_&quot;</div></pre></td></tr></table></figure></p>
 <p>加载container<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#file container01.php</span></div><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="keyword">require</span> vendor/autoload.php</div><div class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Container</span>\<span class="title">Container</span>;</div><div class="line"></div><div class="line">$container = Container::getInstance();</div></pre></td></tr></table></figure></p>
