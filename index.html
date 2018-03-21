@@ -400,10 +400,6 @@
 <li>PHP数据对象(PDO)</li>
 </ul>
 <p>三者都有各自的优缺点。下面的讨论就是为了对每种API的关键方面给出一个简短的介绍。</p>
-<h2 id="什么是PHP的MySQL扩展-废弃"><a href="#什么是PHP的MySQL扩展-废弃" class="headerlink" title="什么是PHP的MySQL扩展?(废弃)"></a><em>什么是PHP的MySQL扩展?</em>(废弃)</h2><p>这是设计开发允许PHP应用与MySQL数据库交互的早期扩展。<em>mysql</em>扩展提供了一个面向过程 的接口，并且是针对MySQL4.1.3或更早版本设计的。因此，这个扩展虽然可以与MySQL4.1.3或更新的数据库服务端 进行交互，但并不支持后期MySQL服务端提供的一些特性。</p>
-<h2 id="什么是PHP的mysql-pdo扩展"><a href="#什么是PHP的mysql-pdo扩展" class="headerlink" title="什么是PHP的mysql_pdo扩展"></a><em>什么是PHP的mysql_pdo扩展</em></h2><p><em>PHP 数据对象</em> （PDO） 扩展为PHP访问数据库定义了一个轻量级的一致接口。实现 PDO 接口的每个数据库驱动可以公开具体数据库的特性作为标准扩展功能。 注意利用 PDO 扩展自身并不能实现任何数据库功能；必须使用一个 具体数据库的 PDO 驱动 来访问数据库服务。</p>
-<p>PDO 提供了一个 <em>数据访问</em> 抽象层，这意味着，不管使用哪种数据库，都可以用相同的函数（方法）来查询和获取数据。 PDO <em>不</em>提供 <em>数据库</em> 抽象层；它不会重写 SQL，也不会模拟缺失的特性。如果需要的话，应该使用一个成熟的抽象层。</p>
-<p>从 PHP 5.1 开始附带了 PDO，在 PHP 5.0 中是作为一个 PECL 扩展使用。 PDO 需要PHP 5 核心的新 OO 特性，因此不能在较早版本的 PHP 上运行。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/06/04/php-mysql-timeout/#more" rel="contents">
