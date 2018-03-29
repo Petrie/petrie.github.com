@@ -99,17 +99,17 @@
 
 
 
-  <meta name="description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Development Tools&amp;apos">
+  <meta name="description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境本文脚本命令仅在以下环境测试成功12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Develo">
 <meta name="keywords" content="PHP,php-extension">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP扩展开发－自动生成扩展骨架">
 <meta property="og:url" content="http://petrie.github.com/2018/03/29/first-php-extension/index.html">
 <meta property="og:site_name" content="Petrie's Home">
-<meta property="og:description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Development Tools&amp;apos">
-<meta property="og:updated_time" content="2018-03-29T08:52:01.000Z">
+<meta property="og:description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境本文脚本命令仅在以下环境测试成功12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Develo">
+<meta property="og:updated_time" content="2018-03-29T09:06:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP扩展开发－自动生成扩展骨架">
-<meta name="twitter:description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Development Tools&amp;apos">
+<meta name="twitter:description" content="PHP扩展编译有两种方式  作为一个可装载模块或者DSO（动态共享对象） 静态编译到PHP  静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式 开发环境本文脚本命令仅在以下环境测试成功12操作系统：CentOS 6.9PHP版本：PHP-7.1 安装开发工具包1yum groupinstall -y &amp;apos;Develo">
 
 
 
@@ -421,12 +421,12 @@
 <li>静态编译到PHP</li>
 </ul>
 <p>静态编译的方式直接和PHP编译到一起，步骤比较简单，但每次变更代码都要编译这个PHP代码，非常耗时，所以这里采用第二种方式</p>
-<h4 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">操作系统：CentOS 6.9</div><div class="line">PHP版本：PHP-7.1</div></pre></td></tr></table></figure>
+<h4 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h4><p>本文脚本命令仅在以下环境测试成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">操作系统：CentOS 6.9</div><div class="line">PHP版本：PHP-7.1</div></pre></td></tr></table></figure></p>
 <h4 id="安装开发工具包"><a href="#安装开发工具包" class="headerlink" title="安装开发工具包"></a>安装开发工具包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum groupinstall -y &apos;Development Tools&apos;</div></pre></td></tr></table></figure>
 <a id="more"></a>
 <h4 id="下载PHP源码"><a href="#下载PHP源码" class="headerlink" title="下载PHP源码"></a>下载PHP源码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone http://git.php.net/repository/php-src.git</div><div class="line">git checkout PHP-7.1</div></pre></td></tr></table></figure>
 <h4 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum install  libxml2-devel</div></pre></td></tr></table></figure>
-<h4 id="编译安装php"><a href="#编译安装php" class="headerlink" title="编译安装php"></a>编译安装php</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">./buildconf</div><div class="line">./configure --prefix=$HOME/php7.1 --enable-debug --enable-maintainer-zts</div><div class="line">make &amp;&amp; make install</div><div class="line">cp php.ini-development /home/vagrant/php7.1/lib/php.ini</div></pre></td></tr></table></figure>
+<h4 id="编译安装php"><a href="#编译安装php" class="headerlink" title="编译安装php"></a>编译安装php</h4><p>安装到~/php7.1目录下，以免覆盖系统已安装的PHP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">./buildconf</div><div class="line">./configure --prefix=$HOME/php7.1 --enable-debug --enable-maintainer-zts</div><div class="line">make &amp;&amp; make install</div></pre></td></tr></table></figure></p>
 <h4 id="生成扩展框架"><a href="#生成扩展框架" class="headerlink" title="生成扩展框架"></a>生成扩展框架</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $HOME/php-src/ext</div><div class="line">$HOME/php-src/ext/ext_skel --extname=testex</div></pre></td></tr></table></figure>
 <h4 id="编辑config-m4"><a href="#编辑config-m4" class="headerlink" title="编辑config.m4"></a>编辑<code>config.m4</code></h4><p>去掉<code>config.m4</code>文件中第16、18行前的dnl注释</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">16 PHP_ARG_ENABLE(testex, whether to enable testex support,</div><div class="line">17 dnl Make sure that the comment is aligned:</div><div class="line">18 [  --enable-testex           Enable testex support])</div></pre></td></tr></table></figure>
