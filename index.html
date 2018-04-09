@@ -317,6 +317,285 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/09/normal-zend-macro-value/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Petrie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Petrie's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/09/normal-zend-macro-value/" itemprop="url">PHP内存管理ZMM常见宏的值</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-09T14:22:25+08:00">2018-04-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h4 id="相关宏的定义"><a href="#相关宏的定义" class="headerlink" title="相关宏的定义"></a>相关宏的定义</h4><p>64位系统非debug模式编译后的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNMENT 8</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNMENT_LOG2 3</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_MIN_SIZE					((ZEND_MM_ALIGNED_MIN_HEADER_SIZE&gt;(ZEND_MM_ALIGNED_HEADER_SIZE+END_MAGIC_SIZE))?(ZEND_MM_ALIGNED_MIN_HEADER_SIZE-(ZEND_MM_ALIGNED_HEADER_SIZE+END_MAGIC_SIZE)):0) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_MAX_SMALL_SIZE				((ZEND_MM_NUM_BUCKETS&lt;&lt;ZEND_MM_ALIGNMENT_LOG2)+ZEND_MM_ALIGNED_MIN_HEADER_SIZE) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNED_HEADER_SIZE			ZEND_MM_ALIGNED_SIZE(sizeof(zend_mm_block)) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNED_FREE_HEADER_SIZE	ZEND_MM_ALIGNED_SIZE(sizeof(zend_mm_small_free_block)) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_MIN_ALLOC_BLOCK_SIZE		ZEND_MM_ALIGNED_SIZE(ZEND_MM_ALIGNED_HEADER_SIZE + END_MAGIC_SIZE) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNED_MIN_HEADER_SIZE		(ZEND_MM_MIN_ALLOC_BLOCK_SIZE&gt;ZEND_MM_ALIGNED_FREE_HEADER_SIZE?ZEND_MM_MIN_ALLOC_BLOCK_SIZE:ZEND_MM_ALIGNED_FREE_HEADER_SIZE) </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_ALIGNED_SEGMENT_SIZE		ZEND_MM_ALIGNED_SIZE(sizeof(zend_mm_segment))  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_TRUE_SIZE(size)				((size&lt;ZEND_MM_MIN_SIZE)?(ZEND_MM_ALIGNED_MIN_HEADER_SIZE):(ZEND_MM_ALIGNED_SIZE(size+ZEND_MM_ALIGNED_HEADER_SIZE+END_MAGIC_SIZE)))</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_SMALL_SIZE(true_size)		(true_size &lt; ZEND_MM_MAX_SMALL_SIZE)</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_MM_BUCKET_INDEX(true_size)		((true_size&gt;&gt;ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE&gt;&gt;ZEND_MM_ALIGNMENT_LOG2))</span></div></pre></td></tr></table></figure>
+<p>下面依次解释各个宏的含义和作用</p>
+<ul>
+<li>ZEND_MM_ALIGNMENT </li>
+</ul>
+<p>内存对齐的时候用到，值为8，无特别的逻辑含义</p>
+<ul>
+<li><p>ZEND_MM_ALIGNMENT_LOG2</p>
+<p>辅助内存对齐的时候用到，值为3，无特别的逻辑含义</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/09/normal-zend-macro-value/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/09/php-zend-memory-manager-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Petrie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Petrie's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/09/php-zend-memory-manager-2/" itemprop="url">PHP内存管理ZMM（二）－内存分配函数_malloc</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-09T10:22:53+08:00">2018-04-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L1880" target="_blank" rel="external">https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L1880</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/08/php-zend-memory-manager/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1503,299 +1782,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2016/08/23/文章是如何写出来的/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Petrie">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Petrie's Home">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/08/23/文章是如何写出来的/" itemprop="url">文章是如何写出来的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-23T15:37:30+08:00">2016-08-23</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/个人成长/" itemprop="url" rel="index"><span itemprop="name">个人成长</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="http://mp.weixin.qq.com/s?__biz=MzAxNzI4MTMwMw==&amp;mid=401905914&amp;idx=2&amp;sn=5158ce84b72a505eadc4b4c8c452d8ef&amp;scene=21#wechat_redirect" target="_blank" rel="external">“霍炬：文章是如何写出来的”阅读笔记</a></p>
-<h2 id="选取一个和别人不懂得角度"><a href="#选取一个和别人不懂得角度" class="headerlink" title="选取一个和别人不懂得角度"></a>选取一个和别人不懂得角度</h2><p>我更关注的不是“人们流行什么”，而是“我能做什么”。首先要给自己找几个标签，我给自己找的大概有”技术“、”互联网“、”从北美看中国“，很少的几个，也很简单。因为我有一个理论，人不可能擅长所有事情，应该找几个自己熟悉的领域，做好它。有了这几个标签之后，剩下的就是把各种事件和他们组合。最近比较火的两篇，快播是“技术”+“法律”、百度这篇是“互联网”+“新闻热点”，这些标签也是具体逻辑到文章的切入点，同时他们也提供了前面所说的“独特性”。一个事件，如果不能找到我自己确定的几个标签相关的部分，我就不参与，再热门也不参与，这是所谓的“只做专业的事”。我通过这些标签保证了文章的专业性，这是基础，如果我放弃了专业和准确，文字本身再好也没什么价值。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2016/08/23/Personal-Growth/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Petrie">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Petrie's Home">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/08/23/Personal-Growth/" itemprop="url">个人成长</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-23T14:05:11+08:00">2016-08-23</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/个人成长/" itemprop="url" rel="index"><span itemprop="name">个人成长</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="http://mp.weixin.qq.com/s?__biz=MzAxNzI4MTMwMw==&amp;mid=2651630150&amp;idx=1&amp;sn=e01e9dccdadbfc682a8f1dc8bc477df7&amp;scene=0#rd" target="_blank" rel="external">学习学习再学习《顾强：影响我个人成长的5个方法》阅读笔记</a></p>
-<h3 id="写作-最好的自我成长方式"><a href="#写作-最好的自我成长方式" class="headerlink" title="写作-最好的自我成长方式"></a>写作-最好的自我成长方式</h3><h4 id="如何组织文字"><a href="#如何组织文字" class="headerlink" title="如何组织文字"></a>如何组织文字</h4><p>阑夕老师微信公众号“几点看法”系列文章，每篇都是按照 1-10 的序列来组织。对于像我这样的新手来说，这个建议最大的好处是让我不纠结如何来组织文字，而专注于思考，把想表达的内容想清楚后按照一定的先后顺序表达出来即可。</p>
-<p><strong>对于文章的节奏感，也就是最好能给做到让读者一口气读完</strong>，这个其实是需要很高的驾驭文字的能力。我现在能给做到的就是写完后反复的阅读，调整语句的表达方式，比如把长句修改为短句，去掉多余的不必要的“的、地、了”等助词，去掉影响文章阅读流畅度的冗余的不想干的文字等等。</p>
-<h4 id="写作后的几点感悟"><a href="#写作后的几点感悟" class="headerlink" title="写作后的几点感悟"></a>写作后的几点感悟</h4><p>1.要有感而发，对读者有启发</p>
-<p>2.写作是最高效的沟通方式</p>
-<p>3.阅读是写作灵感的源泉</p>
-<h3 id="分解-让我们尽快开始"><a href="#分解-让我们尽快开始" class="headerlink" title="分解-让我们尽快开始"></a>分解-让我们尽快开始</h3><h4 id="焦虑情绪"><a href="#焦虑情绪" class="headerlink" title="焦虑情绪"></a>焦虑情绪</h4><p>在生活中，我经常会出现焦虑情绪，哪怕对于自己认为很重要的事情，也会拖到最后一刻才完成。我分析了一下，焦虑，拖延的最重要的原因是自己没头绪、对任务完成没有信心。</p>
-<p>比如，写一篇长点文章，准备演讲材料、啃一本英文书这类相对复杂的任务。往往一拖再拖。对于写文章，我们可以先思考文章主要想表达的内容，罗列文章大纲，然后再根据大纲收集相关的素材。</p>
-<p>对这类个人任务的动作分解最大的作用就是让我们理清头绪，客服畏惧心理，尽快开始起来。我的经验是，这些任务要开始起来，在做的过程中，一些想象中的困难可能并不存在，我们只是缺一个开始。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1843,7 +1829,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">54</span>
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
