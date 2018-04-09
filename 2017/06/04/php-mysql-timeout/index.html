@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/favicon.ico?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。 一、mysql,mysqli,mysql_pdo,mysqlnd扩展当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：  PHP的MySQL扩展 PHP的mysqli扩展 PHP数">
+<meta name="keywords" content="php,mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP设置连接mysql超时时间">
+<meta property="og:url" content="http://petrie.github.com/2017/06/04/php-mysql-timeout/index.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。 一、mysql,mysqli,mysql_pdo,mysqlnd扩展当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：  PHP的MySQL扩展 PHP的mysqli扩展 PHP数">
+<meta property="og:updated_time" content="2018-03-21T09:42:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP设置连接mysql超时时间">
+<meta name="twitter:description" content="本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。 一、mysql,mysqli,mysql_pdo,mysqlnd扩展当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：  PHP的MySQL扩展 PHP的mysqli扩展 PHP数">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/2017/06/04/php-mysql-timeout/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP设置连接mysql超时时间 | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-101431760-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-101431760-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">音乐开大点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2017/06/04/php-mysql-timeout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Petrie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Petrie's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP设置连接mysql超时时间</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-04T20:55:12+08:00">2017-06-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/06/04/php-mysql-timeout/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments:</span> <span class="post-comments-count gitment-comments-count" data-xid="/2017/06/04/php-mysql-timeout/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将分别介绍PHP的mysql扩展, mysqli扩展, mysql_pdo扩展,mysqlnd扩展和libmysql 这些名词的含义。以及他们之间的关系。最后再介绍如何配置mysql的超时时间。</p>
+<h1 id="一、mysql-mysqli-mysql-pdo-mysqlnd扩展"><a href="#一、mysql-mysqli-mysql-pdo-mysqlnd扩展" class="headerlink" title="一、mysql,mysqli,mysql_pdo,mysqlnd扩展"></a>一、mysql,mysqli,mysql_pdo,mysqlnd扩展</h1><p>当考虑连接到MySQL数据库服务器的时候，有三种主要的API可供选择：</p>
+<ul>
+<li>PHP的MySQL扩展</li>
+<li>PHP的mysqli扩展</li>
+<li>PHP数据对象(PDO)</li>
+</ul>
+<p>三者都有各自的优缺点。下面的讨论就是为了对每种API的关键方面给出一个简短的介绍。</p>
+<a id="more"></a>
+<h2 id="什么是PHP的MySQL扩展-废弃"><a href="#什么是PHP的MySQL扩展-废弃" class="headerlink" title="什么是PHP的MySQL扩展?(废弃)"></a><em>什么是PHP的MySQL扩展?</em>(废弃)</h2><p>这是设计开发允许PHP应用与MySQL数据库交互的早期扩展。<em>mysql</em>扩展提供了一个面向过程 的接口，并且是针对MySQL4.1.3或更早版本设计的。因此，这个扩展虽然可以与MySQL4.1.3或更新的数据库服务端 进行交互，但并不支持后期MySQL服务端提供的一些特性。</p>
+<h2 id="什么是PHP的mysql-pdo扩展"><a href="#什么是PHP的mysql-pdo扩展" class="headerlink" title="什么是PHP的mysql_pdo扩展"></a><em>什么是PHP的mysql_pdo扩展</em></h2><p><em>PHP 数据对象</em> （PDO） 扩展为PHP访问数据库定义了一个轻量级的一致接口。实现 PDO 接口的每个数据库驱动可以公开具体数据库的特性作为标准扩展功能。 注意利用 PDO 扩展自身并不能实现任何数据库功能；必须使用一个 具体数据库的 PDO 驱动 来访问数据库服务。</p>
+<p>PDO 提供了一个 <em>数据访问</em> 抽象层，这意味着，不管使用哪种数据库，都可以用相同的函数（方法）来查询和获取数据。 PDO <em>不</em>提供 <em>数据库</em> 抽象层；它不会重写 SQL，也不会模拟缺失的特性。如果需要的话，应该使用一个成熟的抽象层。</p>
+<p>从 PHP 5.1 开始附带了 PDO，在 PHP 5.0 中是作为一个 PECL 扩展使用。 PDO 需要PHP 5 核心的新 OO 特性，因此不能在较早版本的 PHP 上运行。</p>
+<h2 id="什么是PHP的mysqli扩展"><a href="#什么是PHP的mysqli扩展" class="headerlink" title="什么是PHP的mysqli扩展"></a>什么是PHP的mysqli扩展</h2><p><em>mysqli</em>扩展，我们有时称之为MySQL<em>增强</em>扩展，可以用于使用 MySQL4.1.3或更新版本中新的高级特性。<em>mysqli</em>扩展在PHP 5及以后版本中包含。</p>
+<p><em>mysqli</em>扩展有一系列的优势，相对于<em>mysql</em>扩展的提升主要有：</p>
+<ul>
+<li>面向对象接口</li>
+<li>prepared语句支持（译注：关于prepare请参阅mysql相关文档）</li>
+<li>多语句执行支持</li>
+<li>事务支持</li>
+<li>增强的调试能力</li>
+<li>嵌入式服务支持</li>
+</ul>
+<h2 id="什么是PHP的mysqlnd扩展"><a href="#什么是PHP的mysqlnd扩展" class="headerlink" title="什么是PHP的mysqlnd扩展"></a><em>什么是PHP的mysqlnd扩展</em></h2><p><em>为了与MySQL数据库服务端进行交互，</em>mysql<em>扩展，</em>mysqli<em>扩展， PDO MySQL驱动都使用了实现了必要的协议的底层库。以前，可用的库只有MySQL客户端库和</em>libmysql<em>。</em></p>
+<p>然而，<em>libmysql</em>包含的接口没有针对与PHP的应用交互进行优化，<em>libmysql</em> 是早期为C应用程序设计的。基于这个原因，MySQL Native驱动<em>mysqlnd</em>，作为<em>libmysql</em>的一个 针对PHP应用的修改版本被开发。</p>
+<p><em>mysql</em>，<em>mysqli</em>以及PDO Mysql驱动都可以各自配置使用 <em>libmysql</em>或者<em>mysqlnd</em>。<em>mysqlnd</em>作为一个专门设计 用于PHP系统的库，它在内存和速度上都比<em>libmysql</em>有很大提升。非常希望你去尝试这些提升。</p>
+<h1 id="二、如何设置php连接mysql的超时时间"><a href="#二、如何设置php连接mysql的超时时间" class="headerlink" title="二、如何设置php连接mysql的超时时间"></a>二、如何设置php连接mysql的超时时间</h1><p>php连接mysql的超时可以分为三种：</p>
+<ol>
+<li>连接超时</li>
+<li>读超时</li>
+<li>写超时</li>
+</ol>
+<p>因为php连接mysql当前有两种连接方式，libmysql和mysqlnd（推荐）。</p>
+<h2 id="首先libmysql"><a href="#首先libmysql" class="headerlink" title="首先libmysql"></a><em>首先libmysql</em></h2><p>在libmysql这个底层库中，提供了MYSQL_OPT_CONNECT_TIMEOUT、MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME设置项的，并且提供了相关的API。</p>
+<p>源码位置</p>
+<p><code>mysql-VERSION/sql-common/client.c 3020行</code> </p>
+<p>MYSQL_OPT_CONNECT_TIMEOUT可以直接设置。但MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME因为mysqli没有导入这两个常量。所以需要查看MySQL的源码，得到MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME的实际值，然后直接调用mysql_option。但是mysql_pdo是写死的，所以没有任何办法设置MYSQL_OPT_READ_TIMEOUT、MYSQL_OPT_WRITE_TIME。</p>
+<p>源码位置：</p>
+<p><code>mysql-VERSION/include/mysql.h 160行</code></p>
+<p>但是MYSQL_OPT_READ_TIMEOUT在mysql5.6版本以及之前（我们线上用的5.6），这个参数有以下三个限制。</p>
+<ol>
+<li>只能在TCP／IP协议下工作</li>
+<li>MySQL server版本必须大于5.1.2</li>
+<li>只能在windows下生效。</li>
+</ol>
+<h2 id="其次是mysqlnd"><a href="#其次是mysqlnd" class="headerlink" title="其次是mysqlnd"></a><em>其次是mysqlnd</em></h2><p>对于libmysql和mysqlnd来讲，他们都是mysql、mysqli、mysqlpdo的底层库，这三个扩展才是对外暴露api的，所以说，他们对于这三种超时的支持，从代码层面是一样的。</p>
+<p>但是对于<strong>MYSQL_OPT_READ_TIMEOUT</strong>，mysqlnd在php.ini层面多处配置</p>
+<p><code>mysqlnd.net_read_timeout</code></p>
+<p>这个配置会在执行耗时较长的sql时生效，并且报错“2006-MySQL Server has gone away”。</p>
+<p>这个参数和libmysql的MYSQL_OPT_READ_TIMEOUT是极为相似的。但是MYSQL_OPT_READ_TIMEOUT这个参数是有使用场景的，上一小结已经阐述。</p>
+<p>MYSQL_OPT_CONNECT_TIMEOUT和MYSQL_OPT_WRITE_TIME和libmysql是相同的。</p>
+<h1 id="总而言之"><a href="#总而言之" class="headerlink" title="总而言之"></a><em>总而言之</em></h1><p>推荐方案</p>
+<ul>
+<li>使用mysqlnd</li>
+<li>配置 mysqlnd.net_read_time </li>
+</ul>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="http://fendou.org/post/2011/05/06/mysql-communication-protocols/" target="_blank" rel="external">mysql支持的四种协议</a></li>
+<li><a href="blog.csdn.net/heiyeshuwu/article/details/5869813">MYSQL_OPT_READ_TIMEOUT设置</a></li>
+<li><a href="http://php.net/manual/zh/mysqlnd.config.php#ini.mysqlnd.net-read-timeout" target="_blank" rel="external">mysqlnd.net-read-time官方解释</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysql-options.html" target="_blank" rel="external">MYSQL_OPT_CONNECT/READ/WRITE_TIMEOUT官方解释</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/21/laravel-ioc/" rel="next" title="如何独立的使用Laravel的IOC功能">
+                <i class="fa fa-chevron-left"></i> 如何独立的使用Laravel的IOC功能
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/10/mac-php-version/" rel="prev" title="更新Mac的PHP默认版本">
+                更新Mac的PHP默认版本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">56</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">84</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/PetrieLiu" target="_blank" title="Twitter"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、mysql-mysqli-mysql-pdo-mysqlnd扩展"><span class="nav-number">1.</span> <span class="nav-text">一、mysql,mysqli,mysql_pdo,mysqlnd扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PHP的MySQL扩展-废弃"><span class="nav-number">1.1.</span> <span class="nav-text">什么是PHP的MySQL扩展?(废弃)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PHP的mysql-pdo扩展"><span class="nav-number">1.2.</span> <span class="nav-text">什么是PHP的mysql_pdo扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PHP的mysqli扩展"><span class="nav-number">1.3.</span> <span class="nav-text">什么是PHP的mysqli扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PHP的mysqlnd扩展"><span class="nav-number">1.4.</span> <span class="nav-text">什么是PHP的mysqlnd扩展</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、如何设置php连接mysql的超时时间"><span class="nav-number">2.</span> <span class="nav-text">二、如何设置php连接mysql的超时时间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先libmysql"><span class="nav-number">2.1.</span> <span class="nav-text">首先libmysql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其次是mysqlnd"><span class="nav-number">2.2.</span> <span class="nav-text">其次是mysqlnd</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总而言之"><span class="nav-number">3.</span> <span class="nav-text">总而言之</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">4.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.6</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'Petrie',
+            repo: 'gitment-comments',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '418816c6c35d9fef4d072cd40df2778ddd313b98',
+            
+                client_id: '966b11ed7fb7305c0cce'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
