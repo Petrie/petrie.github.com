@@ -102,13 +102,13 @@
   <meta name="description" content="主流程emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展">
 <meta name="keywords" content="php,c">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PHP内存管理ZMM（二）－内存分配函数emalloc">
+<meta property="og:title" content="PHP内存管理ZMM（三）－内存分配函数emalloc">
 <meta property="og:url" content="http://petrie.github.com/2018/04/11/php-zend-memory-manager-2/index.html">
 <meta property="og:site_name" content="Petrie's Home">
 <meta property="og:description" content="主流程emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展">
-<meta property="og:updated_time" content="2018-04-11T10:08:05.000Z">
+<meta property="og:updated_time" content="2018-04-11T10:09:28.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP内存管理ZMM（二）－内存分配函数emalloc">
+<meta name="twitter:title" content="PHP内存管理ZMM（三）－内存分配函数emalloc">
 <meta name="twitter:description" content="主流程emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展">
 
 
@@ -126,7 +126,7 @@
   };
 </script>
 
-  <title>PHP内存管理ZMM（二）－内存分配函数emalloc | Petrie's Home</title>
+  <title>PHP内存管理ZMM（三）－内存分配函数emalloc | Petrie's Home</title>
   
 
 
@@ -338,7 +338,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（二）－内存分配函数emalloc</h1>
+          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（三）－内存分配函数emalloc</h1>
         
 
         <div class="post-meta">
@@ -500,8 +500,8 @@ st->cache->free_buckets->large_free_buckets->rest_buckets->core_malloc->add_rest
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/04/09/normal-zend-macro-value/" rel="prev" title="PHP内存管理ZMM常见宏的值">
-                PHP内存管理ZMM常见宏的值 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/04/09/normal-zend-macro-value/" rel="prev" title="PHP内存管理ZMM（二）－常见宏的值">
+                PHP内存管理ZMM（二）－常见宏的值 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
