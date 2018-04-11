@@ -491,7 +491,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/09/php-zend-memory-manager-2/" itemprop="url">PHP内存管理ZMM（二）－内存分配函数_malloc</a></h1>
+                <a class="post-title-link" href="/2018/04/09/php-zend-memory-manager-2/" itemprop="url">PHP内存管理ZMM（二）－内存分配函数emalloc</a></h1>
         
 
         <div class="post-meta">
@@ -512,6 +512,24 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -542,7 +560,117 @@
       
         
           
-            <p><a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L1880" target="_blank" rel="external">https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L1880</a></p>
+            <h4 id="33"><a href="#33" class="headerlink" title="33"></a>33</h4><p>emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、额外内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展示</p>
+<p><div id="flowchart-0" class="flow-chart"></div></p>
+<h4 id="xx"><a href="#xx" class="headerlink" title="xx"></a>xx</h4><p>代码如下：<a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L1880" target="_blank" rel="external">引自</a></p>
+<p>```c<br>static void <em>_zend_mm_alloc_int(zend_mm_heap </em>heap, size_t size ZEND_FILE_LINE_DC ZEND_FILE_LINE_ORIG_DC)<br>{<br>   zend_mm_free_block <em>best_fit;<br>  //计算true_size,对于计算逻辑和取值可以参考上一篇文章<br>   size_t true_size = ZEND_MM_TRUE_SIZE(size);<br>   size_t block_size;<br>   size_t remaining_size;<br>   size_t segment_size;<br>   zend_mm_segment </em>segment;<br>   int keep_rest = 0;</p>
+<p>#ifdef ZEND_SIGNALS<br>   TSRMLS_FETCH();</p>
+<p>#endif</p>
+<p>   HANDLE_BLOCK_INTERRUPTIONS();</p>
+<p>   if (EXPECTED((true_size))) {<br>     //根据true_size 计算 index的值<br>      size_t index = ZEND_MM_BUCKET_INDEX(true_size);<br>      size_t bitmap;</p>
+<pre><code>if (UNEXPECTED(true_size &lt; size)) {
+   goto out_of_memory;
+}
+</code></pre><p>#if ZEND_MM_CACHE //在缓存块中中查找<br>      if (EXPECTED(heap-&gt;cache[index] != NULL)) {<br>         /<em> Get block from cache </em>/</p>
+<p>#if ZEND_MM_CACHE_STAT<br>         heap-&gt;cache_stat[index].count–;<br>         heap-&gt;cache_stat[index].hit++;</p>
+<p>#endif<br>         best_fit = heap-&gt;cache[index];<br>         heap-&gt;cache[index] = best_fit-&gt;prev_free_block;<br>         heap-&gt;cached -= true_size;<br>         ZEND_MM_CHECK_MAGIC(best_fit, MEM_BLOCK_CACHED);<br>         ZEND_MM_SET_DEBUG_INFO(best_fit, size, 1, 0);<br>         HANDLE_UNBLOCK_INTERRUPTIONS();<br>         return ZEND_MM_DATA_OF(best_fit);<br>      }</p>
+<p>#if ZEND_MM_CACHE_STAT<br>      heap-&gt;cache_stat[index].miss++;</p>
+<p>#endif</p>
+<p>#endif<br>     //在小内存块中查找<br>      bitmap = heap-&gt;free_bitmap &gt;&gt; index;<br>      if (bitmap) {<br>         /<em> Found some “small” free block that can be used </em>/<br>         index += zend_mm_low_bit(bitmap);<br>         best_fit = heap-&gt;free_buckets[index*2];</p>
+<p>#if ZEND_MM_CACHE_STAT<br>         heap-&gt;cache_stat[ZEND_MM_NUM_BUCKETS].hit++;</p>
+<p>#endif<br>         goto zend_mm_finished_searching_for_block;<br>      }<br>   }</p>
+<p>#if ZEND_MM_CACHE_STAT<br>   heap-&gt;cache_stat[ZEND_MM_NUM_BUCKETS].miss++;</p>
+<p>#endif</p>
+<p>   best_fit = zend_mm_search_large_block(heap, true_size);</p>
+<p>   if (!best_fit &amp;&amp; heap-&gt;real_size &gt;= heap-&gt;limit - heap-&gt;block_size) {<br>      zend_mm_free_block *p = heap-&gt;rest_buckets[0];<br>      size_t best_size = -1;</p>
+<pre><code>while (p != ZEND_MM_REST_BUCKET(heap)) {
+   if (UNEXPECTED(ZEND_MM_FREE_BLOCK_SIZE(p) == true_size)) {
+      best_fit = p;
+      goto zend_mm_finished_searching_for_block;
+   } else if (ZEND_MM_FREE_BLOCK_SIZE(p) &gt; true_size &amp;&amp;
+              ZEND_MM_FREE_BLOCK_SIZE(p) &lt; best_size) {
+      best_size = ZEND_MM_FREE_BLOCK_SIZE(p);
+      best_fit = p;
+   }
+   p = p-&gt;prev_free_block;
+}
+</code></pre><p>   }</p>
+<p>   if (!best_fit) {<br>      if (true_size &gt; heap-&gt;block_size - (ZEND_MM_ALIGNED_SEGMENT_SIZE + ZEND_MM_ALIGNED_HEADER_SIZE)) {<br>         /<em> Make sure we add a memory block which is big enough,<br>            segment must have header “size” and trailer “guard” block </em>/<br>         segment_size = true_size + ZEND_MM_ALIGNED_SEGMENT_SIZE + ZEND_MM_ALIGNED_HEADER_SIZE;<br>         segment_size = (segment_size + (heap-&gt;block_size-1)) &amp; ~(heap-&gt;block_size-1);<br>         keep_rest = 1;<br>      } else {<br>         segment_size = heap-&gt;block_size;<br>      }</p>
+<pre><code>if (segment_size &lt; true_size ||
+    heap-&gt;real_size + segment_size &gt; heap-&gt;limit) {
+   /* Memory limit overflow */
+</code></pre><p>#if ZEND_MM_CACHE<br>         zend_mm_free_cache(heap);</p>
+<p>#endif<br>         HANDLE_UNBLOCK_INTERRUPTIONS();</p>
+<p>#if ZEND_DEBUG<br>         zend_mm_safe_error(heap, “Allowed memory size of %ld bytes exhausted at %s:%d (tried to allocate %lu bytes)”, heap-&gt;limit, <strong>zend_filename, </strong>zend_lineno, size);</p>
+<p>#else<br>         zend_mm_safe_error(heap, “Allowed memory size of %ld bytes exhausted (tried to allocate %lu bytes)”, heap-&gt;limit, size);</p>
+<p>#endif<br>      }</p>
+<pre><code>segment = (zend_mm_segment *) ZEND_MM_STORAGE_ALLOC(segment_size);
+
+if (!segment) {
+   /* Storage manager cannot allocate memory */
+</code></pre><p>#if ZEND_MM_CACHE<br>         zend_mm_free_cache(heap);</p>
+<p>#endif<br>out_of_memory:<br>         HANDLE_UNBLOCK_INTERRUPTIONS();</p>
+<p>#if ZEND_DEBUG<br>         zend_mm_safe_error(heap, “Out of memory (allocated %ld) at %s:%d (tried to allocate %lu bytes)”, heap-&gt;real_size, <strong>zend_filename, </strong>zend_lineno, size);</p>
+<p>#else<br>         zend_mm_safe_error(heap, “Out of memory (allocated %ld) (tried to allocate %lu bytes)”, heap-&gt;real_size, size);</p>
+<p>#endif<br>         return NULL;<br>      }</p>
+<pre><code>heap-&gt;real_size += segment_size;
+if (heap-&gt;real_size &gt; heap-&gt;real_peak) {
+   heap-&gt;real_peak = heap-&gt;real_size;
+}
+
+segment-&gt;size = segment_size;
+segment-&gt;next_segment = heap-&gt;segments_list;
+heap-&gt;segments_list = segment;
+
+best_fit = (zend_mm_free_block *) ((char *) segment + ZEND_MM_ALIGNED_SEGMENT_SIZE);
+ZEND_MM_MARK_FIRST_BLOCK(best_fit);
+
+block_size = segment_size - ZEND_MM_ALIGNED_SEGMENT_SIZE - ZEND_MM_ALIGNED_HEADER_SIZE;
+
+ZEND_MM_LAST_BLOCK(ZEND_MM_BLOCK_AT(best_fit, block_size));
+</code></pre><p>   } else {<br>zend_mm_finished_searching_for_block:<br>      /<em> remove from free list </em>/<br>      ZEND_MM_CHECK_MAGIC(best_fit, MEM_BLOCK_FREED);<br>      ZEND_MM_CHECK_COOKIE(best_fit);<br>      ZEND_MM_CHECK_BLOCK_LINKAGE(best_fit);<br>      zend_mm_remove_from_free_list(heap, best_fit);</p>
+<pre><code>block_size = ZEND_MM_FREE_BLOCK_SIZE(best_fit);
+</code></pre><p>   }</p>
+<p>   remaining_size = block_size - true_size;</p>
+<p>   if (remaining_size &lt; ZEND_MM_ALIGNED_MIN_HEADER_SIZE) {<br>      true_size = block_size;<br>      ZEND_MM_BLOCK(best_fit, ZEND_MM_USED_BLOCK, true_size);<br>   } else {<br>      zend_mm_free_block *new_free_block;</p>
+<pre><code>/* prepare new free block */
+ZEND_MM_BLOCK(best_fit, ZEND_MM_USED_BLOCK, true_size);
+new_free_block = (zend_mm_free_block *) ZEND_MM_BLOCK_AT(best_fit, true_size);
+ZEND_MM_BLOCK(new_free_block, ZEND_MM_FREE_BLOCK, remaining_size);
+
+/* add the new free block to the free list */
+if (EXPECTED(!keep_rest)) {
+   zend_mm_add_to_free_list(heap, new_free_block);
+} else {
+   zend_mm_add_to_rest_list(heap, new_free_block);
+}
+</code></pre><p>   }</p>
+<p>   ZEND_MM_SET_DEBUG_INFO(best_fit, size, 1, 1);</p>
+<p>   heap-&gt;size += true_size;<br>   if (heap-&gt;peak &lt; heap-&gt;size) {<br>      heap-&gt;peak = heap-&gt;size;<br>   }</p>
+<p>   HANDLE_UNBLOCK_INTERRUPTIONS();</p>
+<p>   return ZEND_MM_DATA_OF(best_fit);<br>}<br>```<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script><textarea id="flowchart-0-code" style="display: none">st=>start:   Start   |past:>http://www.google.com[blank]
+e=>end: End:>http://www.google.com
+op1=>operation: My Operation|past
+op2=>operation: Stuff|current
+sub1=>subroutine: My Subroutine|invalid
+cond=>condition: Yes or No?|approved:>http://www.google.com
+c2=>condition: Good idea|rejected
+io=>inputoutput: catch something...|request
+startzmm=>operation: start_memory_manager ()
+at php-src/sapi/cli/php_cli.c:1362 |past
+alloc_globals_ctor=>operation: alloc_globals_ctor () 
+at /home/vagrant/php-src/Zend/zend_alloc.c:2742 |past
+zend_mm_startup=>operation: zend_mm_startup () 
+at /home/vagrant/php-src/Zend/zend_alloc.c:1221
+为初始化管理器做一些准备，如获取设置seg_size(块大小)
+zend_mm_startup_ex=>operation: zend_mm_startup_ex () 
+at /home/vagrant/php-src/Zend/zend_alloc.c:1110
+初始化storge和heap结构体中各个字段
+zend_mm_init=>operation: zend_mm_init()
+at /home/vagrant/php-src/Zend/zend_alloc.c:911
+初始化heap中的四种内存块：缓存、小内存、大内存、剩余内存
+
+st->startzmm->alloc_globals_ctor->zend_mm_startup->zend_mm_startup_ex->zend_mm_init->e</textarea><textarea id="flowchart-0-options" style="display: none">{"scale":1,"line-width":2,"line-length":50,"text-margin":10,"font-size":12}</textarea><script>  var code = document.getElementById("flowchart-0-code").value;  var options = JSON.parse(decodeURIComponent(document.getElementById("flowchart-0-options").value));  var diagram = flowchart.parse(code);  diagram.drawSVG("flowchart-0", options);</script></p>
 
           
         
@@ -2087,7 +2215,7 @@
                     
                       
                     
-                    <span class="site-state-item-count">84</span>
+                    <span class="site-state-item-count">85</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
