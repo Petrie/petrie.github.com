@@ -99,24 +99,24 @@
 
 
 
-  <meta name="description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
-<meta name="keywords" content="php,laravel,ioc">
+  <meta name="description" content="本章讲介绍gdb调试php，并手动调用ZMM中申请内存和查找大内存块的函数  _zend_mm_alloc_int zend_mm_search_large_block  为什么要手动调用函数在阅读PHP ZMM源码的时候，有许多复杂的逻辑仅仅通过阅读源码很难理解，比如大内存large_free_buckets结构的构造。同构手动调用函数，可以方便的执行要申请的内存大小，从而测试构造large_f">
+<meta name="keywords" content="php,c,gdb">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何独立的使用Laravel的IOC功能">
-<meta property="og:url" content="http://petrie.github.com/2018/03/21/laravel-ioc/index.html">
+<meta property="og:title" content="PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数">
+<meta property="og:url" content="http://petrie.github.com/2018/04/11/php-zend-gdb-call/index.html">
 <meta property="og:site_name" content="Petrie's Home">
-<meta property="og:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
-<meta property="og:updated_time" content="2018-03-21T09:49:58.000Z">
+<meta property="og:description" content="本章讲介绍gdb调试php，并手动调用ZMM中申请内存和查找大内存块的函数  _zend_mm_alloc_int zend_mm_search_large_block  为什么要手动调用函数在阅读PHP ZMM源码的时候，有许多复杂的逻辑仅仅通过阅读源码很难理解，比如大内存large_free_buckets结构的构造。同构手动调用函数，可以方便的执行要申请的内存大小，从而测试构造large_f">
+<meta property="og:updated_time" content="2018-04-11T14:03:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何独立的使用Laravel的IOC功能">
-<meta name="twitter:description" content="Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件">
+<meta name="twitter:title" content="PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数">
+<meta name="twitter:description" content="本章讲介绍gdb调试php，并手动调用ZMM中申请内存和查找大内存块的函数  _zend_mm_alloc_int zend_mm_search_large_block  为什么要手动调用函数在阅读PHP ZMM源码的时候，有许多复杂的逻辑仅仅通过阅读源码很难理解，比如大内存large_free_buckets结构的构造。同构手动调用函数，可以方便的执行要申请的内存大小，从而测试构造large_f">
 
 
 
 
 
 
-  <link rel="canonical" href="http://petrie.github.com/2018/03/21/laravel-ioc/"/>
+  <link rel="canonical" href="http://petrie.github.com/2018/04/11/php-zend-gdb-call/"/>
 
 
 
@@ -126,7 +126,7 @@
   };
 </script>
 
-  <title>如何独立的使用Laravel的IOC功能 | Petrie's Home</title>
+  <title>PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数 | Petrie's Home</title>
   
 
 
@@ -321,7 +321,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/03/21/laravel-ioc/">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/11/php-zend-gdb-call/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Petrie">
@@ -338,7 +338,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何独立的使用Laravel的IOC功能</h1>
+          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数</h1>
         
 
         <div class="post-meta">
@@ -350,7 +350,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-21T05:55:12+08:00">2018-03-21</time>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-11T18:22:53+08:00">2018-04-11</time>
             
 
             
@@ -371,7 +371,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/laravel/" itemprop="url" rel="index"><span itemprop="name">laravel</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
 
                 
                 
@@ -386,8 +386,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/03/21/laravel-ioc/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments:</span> <span class="post-comments-count gitment-comments-count" data-xid="/2018/03/21/laravel-ioc/" itemprop="commentsCount"></span>
+                <a href="/2018/04/11/php-zend-gdb-call/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments:</span> <span class="post-comments-count gitment-comments-count" data-xid="/2018/04/11/php-zend-gdb-call/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -415,19 +415,32 @@
       
 
       
-        <p>Laravel拥有一个强大的IOC/DI容器。且可以独立于Laravel使用。本文介绍如何单独使用Laravel的container组件</p>
-<a id="more"></a>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>在家目录下新建测试目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir ~/test-laravel-ioc &amp;&amp; cd &quot;$_&quot;</div></pre></td></tr></table></figure></p>
-<p>下载container源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer require illuminate/container</div></pre></td></tr></table></figure></p>
-<p>新建测试文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">touch container01.php &amp;&amp; vim &quot;$_&quot;</div></pre></td></tr></table></figure></p>
-<p>加载container<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#file container01.php</span></div><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="keyword">require</span> vendor/autoload.php</div><div class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Container</span>\<span class="title">Container</span>;</div><div class="line"></div><div class="line">$container = Container::getInstance();</div></pre></td></tr></table></figure></p>
-<p>执行<code>container01.php</code>，无报错则说明加载成功</p>
-<h3 id="测试Container基本功能"><a href="#测试Container基本功能" class="headerlink" title="测试Container基本功能"></a>测试Container基本功能</h3><p>新建测试文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">touch container02.php &amp;&amp; vim &quot;$_&quot;</div></pre></td></tr></table></figure></p>
-<p>用container的make方法新建MyClass对象并执行其中的echo方法<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#file container02.php</span></div><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="keyword">require</span> vendor/autoload.php</div><div class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Container</span>\<span class="title">Container</span>;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">echo</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">      <span class="keyword">echo</span> <span class="string">'testecho'</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">$container = Container::getInstance();</div><div class="line">$instance = $container-&gt;make(MyClass::class);</div><div class="line">$instance-&gt;echo();</div></pre></td></tr></table></figure></p>
-<p>运行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">% php container02.php</div><div class="line">testecho</div></pre></td></tr></table></figure></p>
-<p>显示如上结果则说明容器成功实例话了对象。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>更多容器功能参见官方文档</p>
-<p><a href="https://laravel.com/docs/5.4/container" target="_blank" rel="external">Laravel IOC 官方文档</a><br><a href="https://gist.github.com/davejamesmiller/bd857d9b0ac895df7604dd2e63b23afe" target="_blank" rel="external">https://gist.github.com/davejamesmiller/bd857d9b0ac895df7604dd2e63b23afe</a></p>
+        <p>本章讲介绍gdb调试php，并手动调用ZMM中申请内存和查找大内存块的函数</p>
+<ul>
+<li>_zend_mm_alloc_int</li>
+<li>zend_mm_search_large_block</li>
+</ul>
+<h4 id="为什么要手动调用函数"><a href="#为什么要手动调用函数" class="headerlink" title="为什么要手动调用函数"></a>为什么要手动调用函数</h4><p>在阅读PHP ZMM源码的时候，有许多复杂的逻辑仅仅通过阅读源码很难理解，比如大内存large_free_buckets结构的构造。同构手动调用函数，可以方便的执行要申请的内存大小，从而测试构造large_free_buckets结构</p>
+<h4 id="编译安装PHP"><a href="#编译安装PHP" class="headerlink" title="编译安装PHP"></a>编译安装PHP</h4><p>从github上下载php源码</p>
+<p>编译到目录:~/php5.6-disabledebug，注意不要开启debug选项</p>
+<h4 id="GDB调试PHP"><a href="#GDB调试PHP" class="headerlink" title="GDB调试PHP"></a>GDB调试PHP</h4><a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb --args ~/php5.6-disabledebug/bin/php test.php</div></pre></td></tr></table></figure>
+<p>test.php可以是任意可执行php代码</p>
+<p>执行后设置断点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(gdb) b _zend_mm_alloc_int</div><div class="line">Breakpoint 1 at 0x6b2490: file /home/vagrant/php-src/Zend/zend_alloc.c, line 1881.</div><div class="line">(gdb) b zend_mm_add_to_free_list</div><div class="line">Breakpoint 2 at 0x6b12d0: file /home/vagrant/php-src/Zend/zend_alloc.c, line 734.</div></pre></td></tr></table></figure>
+<p>运行run命令执行test.php脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div><div class="line">Starting program: /home/vagrant/php5.6-disabledebug/bin/php test.php</div><div class="line">[Thread debugging using libthread_db enabled]</div><div class="line"></div><div class="line">Breakpoint 1, _zend_mm_alloc_int (heap=0xe88d90, size=8192) at /home/vagrant/php-src/Zend/zend_alloc.c:1881</div><div class="line">1881	&#123;</div><div class="line">Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.209.el6_9.2.x86_64 libxml2-2.7.6-21.el6_8.1.x86_64 nss-softokn-freebl-3.14.3-23.3.el6_8.x86_64 zlib-1.2.3-29.el6.x86_64</div><div class="line">(gdb)</div></pre></td></tr></table></figure>
+<h4 id="执行-zend-mm-alloc-int函数申请500b的内存"><a href="#执行-zend-mm-alloc-int函数申请500b的内存" class="headerlink" title="执行_zend_mm_alloc_int函数申请500b的内存"></a>执行_zend_mm_alloc_int函数申请500b的内存</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(gdb) call _zend_mm_alloc_int (0xe88d80, 500)</div><div class="line"></div><div class="line">Breakpoint 1, _zend_mm_alloc_int (heap=0xe88d80, size=500) at /home/vagrant/php-src/Zend/zend_alloc.c:1881</div><div class="line">1881	&#123;</div><div class="line">The program being debugged stopped while in a function called from GDB.</div><div class="line">Evaluation of the expression containing the function</div><div class="line">(_zend_mm_alloc_int) will be abandoned.</div><div class="line">When the function is done executing, GDB will silently stop.</div><div class="line">(gdb)</div></pre></td></tr></table></figure>
+<p>执行20行代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(gdb) n 20</div><div class="line"></div><div class="line">Program received signal SIGSEGV, Segmentation fault.</div><div class="line">_zend_mm_alloc_int (heap=0xe88d80, size=500) at /home/vagrant/php-src/Zend/zend_alloc.c:1945</div><div class="line">1945				if (UNEXPECTED(ZEND_MM_FREE_BLOCK_SIZE(p) == true_size)) &#123;</div><div class="line">(gdb)</div></pre></td></tr></table></figure>
+<p>查看heap各个字段的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">(gdb) p size</div><div class="line">$1 = 500</div><div class="line">(gdb) p true_size</div><div class="line">$2 = 520</div><div class="line">(gdb) p heap-&gt;size</div><div class="line">$3 = 0</div><div class="line">(gdb) p heap-&gt;real_size</div><div class="line">$4 = 0</div></pre></td></tr></table></figure>
+<p>执行finish结束_zend_mm_alloc_int函数的执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) finish</div><div class="line">Run till exit from #0  _zend_mm_alloc_int (heap=0xe88d80, size=500) at /home/vagrant/php-src/Zend/zend_alloc.c:1945</div><div class="line"></div><div class="line">Program terminated with signal SIGSEGV, Segmentation fault.</div><div class="line">The program no longer exists.</div></pre></td></tr></table></figure>
+<p>再次查看heap各个字段的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(gdb) p heap-&gt;size</div><div class="line">$9 = 520</div><div class="line">(gdb) p heap-&gt;real_size</div><div class="line">$10 = 262144</div></pre></td></tr></table></figure>
+<h4 id="如何执行zend-mm-search-large-block"><a href="#如何执行zend-mm-search-large-block" class="headerlink" title="如何执行zend_mm_search_large_block"></a>如何执行zend_mm_search_large_block</h4><p>gdb调试过程中不知道什么原因。_zend_mm_alloc_int可以手动调用，但是zend_mm_search_large_block却不行。这里只能绕路调用。因为每次在调用_zend_mm_alloc_int必然会调用zend_mm_search_large_block。所以想调用</p>
+<p>zend_mm_search_large_block，调用zend_mm_alloc_int即可。这里就不做演示了。</p>
 
       
     </div>
@@ -450,9 +463,9 @@
           
             <a href="/tags/php/" rel="tag"># php</a>
           
-            <a href="/tags/laravel/" rel="tag"># laravel</a>
+            <a href="/tags/c/" rel="tag"># c</a>
           
-            <a href="/tags/ioc/" rel="tag"># ioc</a>
+            <a href="/tags/gdb/" rel="tag"># gdb</a>
           
         </div>
       
@@ -465,18 +478,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/29/first-php-extension/" rel="next" title="PHP扩展开发－自动生成扩展骨架">
-                <i class="fa fa-chevron-left"></i> PHP扩展开发－自动生成扩展骨架
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/04/php-mysql-timeout/" rel="prev" title="PHP设置连接mysql超时时间">
-                PHP设置连接mysql超时时间 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/04/11/php-zend-memory-manager-2/" rel="prev" title="PHP内存管理ZMM（三）－内存分配函数emalloc">
+                PHP内存管理ZMM（三）－内存分配函数emalloc <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -873,7 +882,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试Container基本功能"><span class="nav-number">2.</span> <span class="nav-text">测试Container基本功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要手动调用函数"><span class="nav-number">1.</span> <span class="nav-text">为什么要手动调用函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编译安装PHP"><span class="nav-number">2.</span> <span class="nav-text">编译安装PHP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GDB调试PHP"><span class="nav-number">3.</span> <span class="nav-text">GDB调试PHP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行-zend-mm-alloc-int函数申请500b的内存"><span class="nav-number">4.</span> <span class="nav-text">执行_zend_mm_alloc_int函数申请500b的内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何执行zend-mm-search-large-block"><span class="nav-number">5.</span> <span class="nav-text">如何执行zend_mm_search_large_block</span></a></li></ol></div>
             
 
           </div>

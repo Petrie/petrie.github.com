@@ -106,7 +106,7 @@
 <meta property="og:url" content="http://petrie.github.com/2018/04/11/php-zend-memory-manager-2/index.html">
 <meta property="og:site_name" content="Petrie's Home">
 <meta property="og:description" content="主流程emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展">
-<meta property="og:updated_time" content="2018-04-11T10:09:28.000Z">
+<meta property="og:updated_time" content="2018-04-11T11:59:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP内存管理ZMM（三）－内存分配函数emalloc">
 <meta name="twitter:description" content="主流程emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展">
@@ -433,10 +433,10 @@
 <p>综上，因为小内存数组最大index为63（64位系统），所以其所能存储的最大值</p>
 </li>
 <li><p>大内存区 large_free_buckets</p>
-<p>不满足小内存区条件和剩余内存条件的放入large_free_buckets</p>
+<p>不满足<strong>小内存区</strong>条件和<strong>剩余内存</strong>条件的放入large_free_buckets</p>
 </li>
 <li><p>剩余内存区</p>
-<p>当heap中没有合适大小的内存向内核申请时，如果申请的大小大于heap-&gt;block_size。则当有内存剩余时，放入到剩余内存区<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script><textarea id="flowchart-0-code" style="display: none">st=>start:   Start   |past:>http://www.google.com[blank]
+<p>当heap中没有合适大小的内存向内核申请时，如果申请的大小大于heap-&gt;block_size。则当有额外剩下的内存时，放入到<strong>剩余内存区rest_bucket</strong>。举个例子假设heap-&gt;block_size＝256k。如果emalloc申请的大小小于256k，则剩下的内存存入<strong>大内存区large_free_bucket</strong>，否则 emalloc 申请的大小大于256k时，则剩下的内存存入<strong>剩余内存区rest_buckets</strong>中<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script><textarea id="flowchart-0-code" style="display: none">st=>start:   Start   |past:>http://www.google.com[blank]
 e=>end: End:>http://www.google.com
 op1=>operation: My Operation|past
 op2=>operation: Stuff|current
@@ -493,6 +493,10 @@ st->cache->free_buckets->large_free_buckets->rest_buckets->core_malloc->add_rest
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/11/php-zend-gdb-call/" rel="next" title="PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数">
+                <i class="fa fa-chevron-left"></i> PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数
+              </a>
             
           </div>
 
@@ -583,7 +587,7 @@ st->cache->free_buckets->large_free_buckets->rest_buckets->core_malloc->add_rest
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">56</span>
+                    <span class="site-state-item-count">57</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -841,7 +845,9 @@ st->cache->free_buckets->large_free_buckets->rest_buckets->core_malloc->add_rest
                     
                       
                     
-                    <span class="site-state-item-count">85</span>
+                      
+                    
+                    <span class="site-state-item-count">86</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
