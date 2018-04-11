@@ -404,10 +404,7 @@
 
       
         
-          <h4 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h4><p>emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展示</p>
-<div id="flowchart-0" class="flow-chart"></div>
-
-<h4 id="代码注解"><a href="#代码注解" class="headerlink" title="代码注解"></a>代码注解</h4>
+          <h4 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h4><p>emalloc是ZMM中heap层实现的函数，其内部调用_zend_mm_alloc_int函数。在_zend_mm_alloc_int中会依次在heap层的缓存区、小内存区、大内存区、剩余内存区寻找合适的内存。如果在这四个区域中都为查找到合适的内存，则调用malloc向内核申请，在向内核申请内存时，申请的大小必须是segment_size(256k)的整数倍，最小为256k。以下用流程图展示<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/04/11/php-zend-memory-manager-2/#more" rel="contents">
