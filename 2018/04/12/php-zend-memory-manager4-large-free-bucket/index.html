@@ -102,7 +102,7 @@
   <meta name="description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
 <meta name="keywords" content="php,c">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出">
+<meta property="og:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入">
 <meta property="og:url" content="http://petrie.github.com/2018/04/12/php-zend-memory-manager4-large-free-bucket/index.html">
 <meta property="og:site_name" content="Petrie's Home">
 <meta property="og:description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
@@ -110,9 +110,9 @@
 <meta property="og:image" content="http://on-img.com/chart_image/5acf1923e4b02dfcf99d4a6b.png">
 <meta property="og:image" content="http://on-img.com/chart_image/5acf1a4ce4b0f5fa24d00514.png">
 <meta property="og:image" content="http://on-img.com/chart_image/5acf2732e4b0518eaca98596.png">
-<meta property="og:updated_time" content="2018-04-12T10:34:46.000Z">
+<meta property="og:updated_time" content="2018-04-12T14:51:21.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出">
+<meta name="twitter:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入">
 <meta name="twitter:description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
 <meta name="twitter:image" content="http://on-img.com/chart_image/5acf199ee4b0518eaca92c2f.png">
 
@@ -131,7 +131,7 @@
   };
 </script>
 
-  <title>PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出 | Petrie's Home</title>
+  <title>PHP内存管理ZMM（五）－大内存区large_free_bucket的存入 | Petrie's Home</title>
   
 
 
@@ -319,7 +319,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出</h1>
+          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（五）－大内存区large_free_bucket的存入</h1>
         
 
         <div class="post-meta">
@@ -367,6 +367,14 @@
           
           
 
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
           
 
           
@@ -433,6 +441,10 @@
 
       
     </div>
+
+    
+      
+
 
     
 
@@ -818,6 +830,20 @@
           
 
           
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
 
           
           
@@ -891,6 +917,24 @@
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
