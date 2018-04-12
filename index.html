@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -52,16 +52,16 @@
 <link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico?v=6.0.6">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=6.0.6">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=6.0.6">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
 
 
-  <link rel="mask-icon" href="/favicon.ico?v=6.0.6" color="#222">
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
 
 
 
@@ -75,7 +75,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Muse',
     version: '6.0.6',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: false,
@@ -127,13 +127,13 @@
 
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-101431760-1"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'UA-101431760-1');
+  gtag('config', '[object Object]');
 </script>
 
 
@@ -227,24 +227,6 @@
         
         
           
-  <li class="menu-item menu-item-tags">
-    <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
-</li>
-
-      
-        
-        
-          
-  <li class="menu-item menu-item-categories">
-    <a href="/categories/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
-</li>
-
-      
-        
-        
-          
   <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
@@ -260,12 +242,6 @@
     
 
     
-    
-      
-      
-    
-      
-      
     
       
       
@@ -301,6 +277,158 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/12/php-zend-memory-manager4-large-free-bucket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Petrie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Petrie's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/12/php-zend-memory-manager4-large-free-bucket/" itemprop="url">PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-12T18:22:53+08:00">2018-04-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。</p>
+<h3 id="什么时候会向large-free-bucket存入内存块"><a href="#什么时候会向large-free-bucket存入内存块" class="headerlink" title="什么时候会向large_free_bucket存入内存块"></a>什么时候会向large_free_bucket存入内存块</h3><p>这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数会调用malloc向内核申请内存。向内核申请每次只能申请 heap-&gt;block_size倍数大小内存。所以内核申请到的  heap-&gt;block_size倍数 大小的内存并不会全部返回到emalloc调用者，而是有剩余。</p>
+<p>举个例子，假设heap-&gt;block_size=256k，如果emalloc调用者申请大小为250k时，emalloc内部会向内核申请256k大小的内存。所以会有6k的内存剩余，这6k的内存将会存入到<strong>大内存区large_free_bucket</strong>。</p>
+<p>另外一个例子，假设heap-&gt;block_size=256k，如果emalloc调用者申请大小为260k（大于256k）时，emalloc会申请256<em>2=512k大小的内存，此时会有512k－260k＝252k的内存剩余。此时剩下的252k内存会存入到<em>*剩余内存区rest_bucket</em></em>。</p>
+<h3 id="手动构建large-free-bucket结构"><a href="#手动构建large-free-bucket结构" class="headerlink" title="手动构建large_free_bucket结构"></a>手动构建large_free_bucket结构</h3><h4 id="large-free-bucket结构举例"><a href="#large-free-bucket结构举例" class="headerlink" title="large_free_bucket结构举例"></a>large_free_bucket结构举例</h4><p>现在假设有以下内存块在large_free_bucket，分别为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">大小			二进制					alloc_size</div><div class="line">	</div><div class="line"><span class="number">600</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">0101</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-600</span>=<span class="number">261496</span></div><div class="line"><span class="number">704</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">1100</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-704</span>=<span class="number">261392</span></div><div class="line"><span class="number">800</span>			<span class="number">0000</span> <span class="number">0011</span> <span class="number">0010</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-800</span>=<span class="number">261296</span></div><div class="line"><span class="number">904</span>			<span class="number">0000</span> <span class="number">0011</span> <span class="number">1000</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-904</span>=<span class="number">261192</span></div><div class="line"><span class="number">1000</span>		<span class="number">0000</span> <span class="number">0011</span> <span class="number">1110</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-1000</span>=<span class="number">261096</span></div><div class="line"><span class="number">600</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">0101</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-600</span>=<span class="number">261496</span></div><div class="line"><span class="number">704</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">1100</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-704</span>=<span class="number">261392</span></div></pre></td></tr></table></figure>
+<p>上面第一列中是准备存入heap中的内存大小，第二列为其二进制。第三列为_zend_mm_alloc_int传入的内存大小。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/12/php-zend-memory-manager4-large-free-bucket/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1656,153 +1784,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2016/08/25/PHP-枚举类型/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Petrie">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Petrie's Home">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/08/25/PHP-枚举类型/" itemprop="url">PHP 枚举类型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-25T18:00:54+08:00">2016-08-25</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>PHP没有原声的枚举，从Java转过来的就懵逼了。那么怎么才能在PHP中使用枚举，而且又能被IDE识别呢。Constants（define）是一种办法，但是他是全局的，有命名空间冲突的问题。虽然数组没有命名空间问题，但是数组定义常量太模糊，而且运行时是可以被覆盖的，而且很少有IDE可以自动补全。</p>
-<h2 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h2><h3 id="1-简单的用法"><a href="#1-简单的用法" class="headerlink" title="1.简单的用法"></a>1.简单的用法</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">DaysOfWeek</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">const</span> Sunday = <span class="number">0</span>;</div><div class="line">    <span class="keyword">const</span> Monday = <span class="number">1</span>;</div><div class="line">    <span class="comment">// etc.</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">$today = DaysOfWeek::Sunday;</div></pre></td></tr></table></figure>
-<p>以上的方式很多情况下需要验证常量的值，以下的方法可以应用大部分场景</p>
-<h3 id="2-完善的用法"><a href="#2-完善的用法" class="headerlink" title="2.完善的用法"></a>2.完善的用法</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicEnum</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> $constCacheArray = <span class="keyword">NULL</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getConstants</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>::$constCacheArray == <span class="keyword">NULL</span>) &#123;</div><div class="line">            <span class="keyword">self</span>::$constCacheArray = [];</div><div class="line">        &#125;</div><div class="line">        $calledClass = get_called_class();</div><div class="line">        <span class="keyword">if</span> (!array_key_exists($calledClass, <span class="keyword">self</span>::$constCacheArray)) &#123;</div><div class="line">            $reflect = <span class="keyword">new</span> ReflectionClass($calledClass);</div><div class="line">            <span class="keyword">self</span>::$constCacheArray[$calledClass] = $reflect-&gt;getConstants();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>::$constCacheArray[$calledClass];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">isValidName</span><span class="params">($name, $strict = false)</span> </span>&#123;</div><div class="line">        $constants = <span class="keyword">self</span>::getConstants();</div><div class="line"></div><div class="line">        <span class="keyword">if</span> ($strict) &#123;</div><div class="line">            <span class="keyword">return</span> array_key_exists($name, $constants);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        $keys = array_map(<span class="string">'strtolower'</span>, array_keys($constants));</div><div class="line">        <span class="keyword">return</span> in_array(strtolower($name), $keys);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">isValidValue</span><span class="params">($value, $strict = true)</span> </span>&#123;</div><div class="line">        $values = array_values(<span class="keyword">self</span>::getConstants());</div><div class="line">        <span class="keyword">return</span> in_array($value, $values, $strict);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//应用场景</span></div><div class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">DaysOfWeek</span> <span class="keyword">extends</span> <span class="title">BasicEnum</span> </span>&#123;</div><div class="line">    <span class="keyword">const</span> Sunday = <span class="number">0</span>;</div><div class="line">    <span class="keyword">const</span> Monday = <span class="number">1</span>;</div><div class="line">    <span class="keyword">const</span> Tuesday = <span class="number">2</span>;</div><div class="line">    <span class="keyword">const</span> Wednesday = <span class="number">3</span>;</div><div class="line">    <span class="keyword">const</span> Thursday = <span class="number">4</span>;</div><div class="line">    <span class="keyword">const</span> Friday = <span class="number">5</span>;</div><div class="line">    <span class="keyword">const</span> Saturday = <span class="number">6</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">DaysOfWeek::isValidName(<span class="string">'Humpday'</span>);                  <span class="comment">// false</span></div><div class="line">DaysOfWeek::isValidName(<span class="string">'Monday'</span>);                   <span class="comment">// true</span></div><div class="line">DaysOfWeek::isValidName(<span class="string">'monday'</span>);                   <span class="comment">// true</span></div><div class="line">DaysOfWeek::isValidName(<span class="string">'monday'</span>, $strict = <span class="keyword">true</span>);   <span class="comment">// false</span></div><div class="line">DaysOfWeek::isValidName(<span class="number">0</span>);                          <span class="comment">// false</span></div><div class="line"></div><div class="line">DaysOfWeek::isValidValue(<span class="number">0</span>);                         <span class="comment">// true</span></div><div class="line">DaysOfWeek::isValidValue(<span class="number">5</span>);                         <span class="comment">// true</span></div><div class="line">DaysOfWeek::isValidValue(<span class="number">7</span>);                         <span class="comment">// false</span></div><div class="line">DaysOfWeek::isValidValue(<span class="string">'Friday'</span>);                  <span class="comment">// false</span></div></pre></td></tr></table></figure>
-<h2 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h2><h3 id="使用PHP-Perl扩展中的SplEnum"><a href="#使用PHP-Perl扩展中的SplEnum" class="headerlink" title="使用PHP Perl扩展中的SplEnum"></a>使用PHP Perl扩展中的SplEnum</h3><p>示例</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Month</span> <span class="keyword">extends</span> <span class="title">SplEnum</span> </span>&#123;</div><div class="line">    <span class="keyword">const</span> __default = <span class="keyword">self</span>::January;</div><div class="line">    </div><div class="line">    <span class="keyword">const</span> January = <span class="number">1</span>;</div><div class="line">    <span class="keyword">const</span> February = <span class="number">2</span>;</div><div class="line">    <span class="keyword">const</span> March = <span class="number">3</span>;</div><div class="line">    <span class="keyword">const</span> April = <span class="number">4</span>;</div><div class="line">    <span class="keyword">const</span> May = <span class="number">5</span>;</div><div class="line">    <span class="keyword">const</span> June = <span class="number">6</span>;</div><div class="line">    <span class="keyword">const</span> July = <span class="number">7</span>;</div><div class="line">    <span class="keyword">const</span> August = <span class="number">8</span>;</div><div class="line">    <span class="keyword">const</span> September = <span class="number">9</span>;</div><div class="line">    <span class="keyword">const</span> October = <span class="number">10</span>;</div><div class="line">    <span class="keyword">const</span> November = <span class="number">11</span>;</div><div class="line">    <span class="keyword">const</span> December = <span class="number">12</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">echo</span> <span class="keyword">new</span> Month(Month::June) . PHP_EOL;</div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">new</span> Month(<span class="number">13</span>);</div><div class="line">&#125; <span class="keyword">catch</span> (UnexpectedValueException $uve) &#123;</div><div class="line">    <span class="keyword">echo</span> $uve-&gt;getMessage() . PHP_EOL;</div><div class="line">&#125;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1850,7 +1831,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">57</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2121,25 +2102,6 @@
           
 
           
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                  
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                  
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="https://twitter.com/PetrieLiu" target="_blank" title="Twitter"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
-                  
-                </span>
-              
-            </div>
-          
 
           
           
@@ -2191,7 +2153,7 @@
 
 
 
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.6</div>
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
 
 
 
@@ -2311,19 +2273,6 @@
 
 
 
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
 
 
 

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
+<meta name="keywords" content="php,c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出">
+<meta property="og:url" content="http://petrie.github.com/2018/04/12/php-zend-memory-manager4-large-free-bucket/index.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
+<meta property="og:image" content="http://on-img.com/chart_image/5acf199ee4b0518eaca92c2f.png">
+<meta property="og:image" content="http://on-img.com/chart_image/5acf1923e4b02dfcf99d4a6b.png">
+<meta property="og:image" content="http://on-img.com/chart_image/5acf1a4ce4b0f5fa24d00514.png">
+<meta property="og:image" content="http://on-img.com/chart_image/5acf2732e4b0518eaca98596.png">
+<meta property="og:updated_time" content="2018-04-12T10:34:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出">
+<meta name="twitter:description" content="之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。 什么时候会向large_free_bucket存入内存块这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数">
+<meta name="twitter:image" content="http://on-img.com/chart_image/5acf199ee4b0518eaca92c2f.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/2018/04/12/php-zend-memory-manager4-large-free-bucket/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出 | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '[object Object]');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">音乐开大点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://petrie.github.com/2018/04/12/php-zend-memory-manager4-large-free-bucket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Petrie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Petrie's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP内存管理ZMM（五）－大内存区large_free_bucket的存入和取出</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-12T18:22:53+08:00">2018-04-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前的章节中介绍过large_free_bucket的存入条件。这一篇将介绍large_free_bucket的主要结构包括其中的链表结构和树结构和存入取出流程。本章讲通过图示大内存区域内存分部情况。</p>
+<h3 id="什么时候会向large-free-bucket存入内存块"><a href="#什么时候会向large-free-bucket存入内存块" class="headerlink" title="什么时候会向large_free_bucket存入内存块"></a>什么时候会向large_free_bucket存入内存块</h3><p>这里在复习下存入large_free_bucket流程。在调用emalloc申请能存，且在当前heap中没有找到合适内存块，emalloc函数会调用malloc向内核申请内存。向内核申请每次只能申请 heap-&gt;block_size倍数大小内存。所以内核申请到的  heap-&gt;block_size倍数 大小的内存并不会全部返回到emalloc调用者，而是有剩余。</p>
+<p>举个例子，假设heap-&gt;block_size=256k，如果emalloc调用者申请大小为250k时，emalloc内部会向内核申请256k大小的内存。所以会有6k的内存剩余，这6k的内存将会存入到<strong>大内存区large_free_bucket</strong>。</p>
+<p>另外一个例子，假设heap-&gt;block_size=256k，如果emalloc调用者申请大小为260k（大于256k）时，emalloc会申请256<em>2=512k大小的内存，此时会有512k－260k＝252k的内存剩余。此时剩下的252k内存会存入到<em>*剩余内存区rest_bucket</em></em>。</p>
+<h3 id="手动构建large-free-bucket结构"><a href="#手动构建large-free-bucket结构" class="headerlink" title="手动构建large_free_bucket结构"></a>手动构建large_free_bucket结构</h3><h4 id="large-free-bucket结构举例"><a href="#large-free-bucket结构举例" class="headerlink" title="large_free_bucket结构举例"></a>large_free_bucket结构举例</h4><p>现在假设有以下内存块在large_free_bucket，分别为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">大小			二进制					alloc_size</div><div class="line">	</div><div class="line"><span class="number">600</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">0101</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-600</span>=<span class="number">261496</span></div><div class="line"><span class="number">704</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">1100</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-704</span>=<span class="number">261392</span></div><div class="line"><span class="number">800</span>			<span class="number">0000</span> <span class="number">0011</span> <span class="number">0010</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-800</span>=<span class="number">261296</span></div><div class="line"><span class="number">904</span>			<span class="number">0000</span> <span class="number">0011</span> <span class="number">1000</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-904</span>=<span class="number">261192</span></div><div class="line"><span class="number">1000</span>		<span class="number">0000</span> <span class="number">0011</span> <span class="number">1110</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-1000</span>=<span class="number">261096</span></div><div class="line"><span class="number">600</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">0101</span> <span class="number">1000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-600</span>=<span class="number">261496</span></div><div class="line"><span class="number">704</span>			<span class="number">0000</span> <span class="number">0010</span> <span class="number">1100</span> <span class="number">0000</span>		<span class="number">262144</span><span class="number">-48</span><span class="number">-704</span>=<span class="number">261392</span></div></pre></td></tr></table></figure>
+<p>上面第一列中是准备存入heap中的内存大小，第二列为其二进制。第三列为_zend_mm_alloc_int传入的内存大小。</p>
+<a id="more"></a>
+<p>之前提过用gdb手动调用_zend_mm_alloc_int的方法，详情看一下前面的文章“<a href="http://petrie.github.io/2018/04/11/php-zend-gdb-call/" target="_blank" rel="external">PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数</a>”。</p>
+<h4 id="存入第一个大小为600b的内存"><a href="#存入第一个大小为600b的内存" class="headerlink" title="存入第一个大小为600b的内存"></a>存入第一个大小为600b的内存</h4><p>手动调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261496)</div></pre></td></tr></table></figure>
+<p>申请大小261496b（第一行最后一行的数值），ZMM会向内核申请262144(256k)的内存，去掉部分结构体占用的内存48b。则剩余600b大小的内存，这600b的内存讲放入<strong>大内存区域</strong>中。</p>
+<p>用gdb查看heap-&gt;large_free_buckets当前的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">(gdb) p heap-&gt;large_free_bitmap</div><div class="line">$26 = 512</div><div class="line">(gdb) p heap-&gt;large_free_buckets</div><div class="line">$10 = &#123;0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x7ffff7fecda8, 0x0 &lt;repeats 54 times&gt;&#125;</div><div class="line">(gdb) p &amp;heap-&gt;large_free_buckets[9]</div><div class="line">$16 = (zend_mm_free_block **) 0xe89470</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]</div><div class="line">$15 = &#123;info = &#123;_size = 600, _prev = 261513&#125;, prev_free_block = 0x7ffff7fabda8, next_free_block = 0x7ffff7fabda8, parent = 0xe89470, child = &#123;0x0, 0x0&#125;&#125;</div></pre></td></tr></table></figure>
+<p>图示如下：</p>
+<p><img src="http://on-img.com/chart_image/5acf199ee4b0518eaca92c2f.png" alt=""></p>
+<p>如图所示，插入的第一个元素zend_mm_free_block[600]（用zend_mm_free_block[600]表示大小为600的zend_mm_free_block内存结构），其prev_free_block和next_free_block均指向其本身，其parent为&amp;heap-&gt;large_free_buckets[9]，heap-&gt;large_free_buckets[9]则指向zend_mm_free_block[600]。</p>
+<p>相关代码:<a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L739" target="_blank" rel="external">引自</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">p = &amp;heap-&gt;large_free_buckets[index];</div><div class="line">mm_block-&gt;child[<span class="number">0</span>] = mm_block-&gt;child[<span class="number">1</span>] = <span class="literal">NULL</span>;</div><div class="line"><span class="keyword">if</span> (!*p) &#123;</div><div class="line">	*p = mm_block;</div><div class="line">	mm_block-&gt;parent = p;</div><div class="line">	mm_block-&gt;prev_free_block = mm_block-&gt;next_free_block = mm_block;</div><div class="line">	heap-&gt;large_free_bitmap |= (ZEND_MM_LONG_CONST(<span class="number">1</span>) &lt;&lt; index);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div></pre></td></tr></table></figure>
+<h4 id="存入大小为600b的内存"><a href="#存入大小为600b的内存" class="headerlink" title="存入大小为600b的内存"></a>存入大小为600b的内存</h4><p>手动调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261392)</div></pre></td></tr></table></figure>
+<p>用gdb查看heap-&gt;large_free_buckets当前的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">(gdb) p heap-&gt;large_free_bitmap</div><div class="line">$27 = 512</div><div class="line">(gdb) p heap-&gt;large_free_buckets</div><div class="line">$28 = &#123;0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x7ffff7fecda8, 0x0 &lt;repeats 54 times&gt;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]</div><div class="line">$29 = &#123;info = &#123;_size = 600, _prev = 261513&#125;, prev_free_block = 0x7ffff7fabda8, next_free_block = 0x7ffff7fabda8, parent = 0xe89470, child = &#123;0x7ffff7f6ad40, 0x0&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[0]</div><div class="line">$30 = &#123;info = &#123;_size = 704, _prev = 261409&#125;, prev_free_block = 0x7ffff7f6ad40, next_free_block = 0x7ffff7f6ad40, parent = 0x7ffff7fecdd0, child = &#123;0x0, 0x0&#125;&#125;</div></pre></td></tr></table></figure>
+<p>图示如下：</p>
+<p><img src="http://on-img.com/chart_image/5acf1923e4b02dfcf99d4a6b.png" alt=""></p>
+<p>这里要注意的地方是zend_mm_free_block[704]的parent字段是一个指针的指针，其指向zend_mm_free_block[600]的child[0]字段。</p>
+<p>相关代码：<a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L746" target="_blank" rel="external"></a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">size_t</span> m;</div><div class="line"></div><div class="line">			<span class="keyword">for</span> (m = size &lt;&lt; (ZEND_MM_NUM_BUCKETS - index); ; m &lt;&lt;= <span class="number">1</span>) &#123;</div><div class="line">				zend_mm_free_block *prev = *p;</div><div class="line"></div><div class="line">				<span class="keyword">if</span> (ZEND_MM_FREE_BLOCK_SIZE(prev) != size) &#123;</div><div class="line">					p = &amp;prev-&gt;child[(m &gt;&gt; (ZEND_MM_NUM_BUCKETS<span class="number">-1</span>)) &amp; <span class="number">1</span>];</div><div class="line">					<span class="keyword">if</span> (!*p) &#123;</div><div class="line">						*p = mm_block;</div><div class="line">						mm_block-&gt;parent = p;</div><div class="line">						mm_block-&gt;prev_free_block = mm_block-&gt;next_free_block = mm_block;</div><div class="line">						<span class="keyword">break</span>;</div><div class="line">					&#125;</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">					...</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
+<h4 id="存入大小为800b、904b、1000b的内存"><a href="#存入大小为800b、904b、1000b的内存" class="headerlink" title="存入大小为800b、904b、1000b的内存"></a>存入大小为800b、904b、1000b的内存</h4><p>依次手动调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261296)</div><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261192)</div><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261096)</div></pre></td></tr></table></figure>
+<p>用gdb查看heap-&gt;large_free_buckets当前的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(gdb) p heap-&gt;large_free_buckets[9]</div><div class="line">$71 = (zend_mm_free_block *) 0x7ffff7fecda8</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]</div><div class="line">$72 = &#123;info = &#123;_size = 600, _prev = 261513&#125;, prev_free_block = 0x7ffff7fecda8, next_free_block = 0x7ffff7fecda8, parent = 0xe89470, child = &#123;0x7ffff7fabd40, 0x7ffff7f6ace0&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[0]</div><div class="line">$73 = &#123;info = &#123;_size = 704, _prev = 261409&#125;, prev_free_block = 0x7ffff7fabd40, next_free_block = 0x7ffff7fabd40, parent = 0x7ffff7fecdd0, child = &#123;0x0, 0x0&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[1]</div><div class="line">$74 = &#123;info = &#123;_size = 800, _prev = 261313&#125;, prev_free_block = 0x7ffff7f6ace0, next_free_block = 0x7ffff7f6ace0, parent = 0x7ffff7fecdd8, child = &#123;0x0, 0x7ffff7f29c78&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[1]-&gt;child[1]</div><div class="line">$75 = &#123;info = &#123;_size = 904, _prev = 261209&#125;, prev_free_block = 0x7ffff7f29c78, next_free_block = 0x7ffff7f29c78, parent = 0x7ffff7f6ad10, child = &#123;0x0, 0x7ffff7ee8c18&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[1]-&gt;child[1]-&gt;child[1]</div><div class="line">$76 = &#123;info = &#123;_size = 1000, _prev = 261113&#125;, prev_free_block = 0x7ffff7ee8c18, next_free_block = 0x7ffff7ee8c18, parent = 0x7ffff7f29ca8, child = &#123;0x0, 0x0&#125;&#125;</div></pre></td></tr></table></figure>
+<p>图示如下：</p>
+<p><img src="http://on-img.com/chart_image/5acf1a4ce4b0f5fa24d00514.png" alt=""></p>
+<h4 id="存入大小为600b、704b的内存"><a href="#存入大小为600b、704b的内存" class="headerlink" title="存入大小为600b、704b的内存"></a>存入大小为600b、704b的内存</h4><p>依次手动调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261496)</div><div class="line">call _zend_mm_alloc_int (heap=0xe88d90, size=261392)</div></pre></td></tr></table></figure>
+<p>用gdb查看heap-&gt;large_free_buckets当前的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;child[0]-&gt;next_free_block</div><div class="line">$101 = &#123;info = &#123;_size = 704, _prev = 261409&#125;, prev_free_block = 0x7ffff7fabd40, next_free_block = 0x7ffff7fabd40, parent = 0x0, child = &#123;0x0, 0x0&#125;&#125;</div><div class="line">(gdb) p *heap-&gt;large_free_buckets[9]-&gt;next_free_block</div><div class="line">$102 = &#123;info = &#123;_size = 600, _prev = 261513&#125;, prev_free_block = 0x7ffff7fecda8, next_free_block = 0x7ffff7fecda8, parent = 0x0, child = &#123;0x0, 0x0&#125;&#125;</div></pre></td></tr></table></figure>
+<p>图示如下：</p>
+<p><img src="http://on-img.com/chart_image/5acf2732e4b0518eaca98596.png" alt=""></p>
+<p>上图包括了 大内存区域 的两种数据结构：树结构和双向链表结构。</p>
+<p>相关代码：<a href="https://github.com/php/php-src/blob/9c1d686748cdb46e2f80a9bc800df0015fb709b1/Zend/zend_alloc.c#L760" target="_blank" rel="external">引用</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">	<span class="keyword">size_t</span> m;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (m = size &lt;&lt; (ZEND_MM_NUM_BUCKETS - index); ; m &lt;&lt;= <span class="number">1</span>) &#123;</div><div class="line">		zend_mm_free_block *prev = *p;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (ZEND_MM_FREE_BLOCK_SIZE(prev) != size) &#123;</div><div class="line">			p = &amp;prev-&gt;child[(m &gt;&gt; (ZEND_MM_NUM_BUCKETS<span class="number">-1</span>)) &amp; <span class="number">1</span>];</div><div class="line">			...</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			zend_mm_free_block *next = prev-&gt;next_free_block;</div><div class="line"></div><div class="line">			prev-&gt;next_free_block = next-&gt;prev_free_block = mm_block;</div><div class="line">			mm_block-&gt;next_free_block = next;</div><div class="line">			mm_block-&gt;prev_free_block = prev;</div><div class="line">			mm_block-&gt;parent = <span class="literal">NULL</span>;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3><p>本章内容较多，可能会比较难理解，通过gdb调试有助于更好的理解。另外前几篇关于ZMM的文章也有助于对本章的理解。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+            <a href="/tags/c/" rel="tag"># c</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/11/php-zend-gdb-call/" rel="prev" title="PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数">
+                PHP内存管理ZMM（四）－GDB调试php源码并手动调用ZMM相关函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么时候会向large-free-bucket存入内存块"><span class="nav-number">1.</span> <span class="nav-text">什么时候会向large_free_bucket存入内存块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动构建large-free-bucket结构"><span class="nav-number">2.</span> <span class="nav-text">手动构建large_free_bucket结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#large-free-bucket结构举例"><span class="nav-number">2.1.</span> <span class="nav-text">large_free_bucket结构举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存入第一个大小为600b的内存"><span class="nav-number">2.2.</span> <span class="nav-text">存入第一个大小为600b的内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存入大小为600b的内存"><span class="nav-number">2.3.</span> <span class="nav-text">存入大小为600b的内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存入大小为800b、904b、1000b的内存"><span class="nav-number">2.4.</span> <span class="nav-text">存入大小为800b、904b、1000b的内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存入大小为600b、704b的内存"><span class="nav-number">2.5.</span> <span class="nav-text">存入大小为600b、704b的内存</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#END"><span class="nav-number">3.</span> <span class="nav-text">END</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
