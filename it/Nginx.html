@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="NginxcgiCGI scripts is a way how to run a server side script when a HTTP request comes;CGI脚本是一种如何在服务端运行HTTP请求的方式 fastcgi比cgi更好的一种方式，GCI很慢，fastcgi更快 php-fpmfastcgi的php实现 限流限流算法令牌桶和漏桶对比： 令牌桶是按照固定速率往桶中添加">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Petrie's Home">
+<meta property="og:url" content="http://petrie.github.com/it/Nginx.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="NginxcgiCGI scripts is a way how to run a server side script when a HTTP request comes;CGI脚本是一种如何在服务端运行HTTP请求的方式 fastcgi比cgi更好的一种方式，GCI很慢，fastcgi更快 php-fpmfastcgi的php实现 限流限流算法令牌桶和漏桶对比： 令牌桶是按照固定速率往桶中添加">
+<meta property="og:updated_time" content="2018-05-10T13:16:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petrie's Home">
+<meta name="twitter:description" content="NginxcgiCGI scripts is a way how to run a server side script when a HTTP request comes;CGI脚本是一种如何在服务端运行HTTP请求的方式 fastcgi比cgi更好的一种方式，GCI很慢，fastcgi更快 php-fpmfastcgi的php实现 限流限流算法令牌桶和漏桶对比： 令牌桶是按照固定速率往桶中添加">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/Nginx.html"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '[object Object]');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="it">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-notes">
+    <a href="/it/summary2.html" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />notes</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categorie</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archivi</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline"></h1>
+
+<div class="post-meta">
+  
+  
+
+
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><h3 id="cgi"><a href="#cgi" class="headerlink" title="cgi"></a>cgi</h3><p>CGI scripts is a way how to run a server side script when a HTTP request comes;CGI脚本是一种如何在服务端运行HTTP请求的方式</p>
+<h3 id="fastcgi"><a href="#fastcgi" class="headerlink" title="fastcgi"></a>fastcgi</h3><p>比cgi更好的一种方式，GCI很慢，fastcgi更快</p>
+<h3 id="php-fpm"><a href="#php-fpm" class="headerlink" title="php-fpm"></a>php-fpm</h3><p>fastcgi的php实现</p>
+<h3 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h3><h4 id="限流算法令牌桶和漏桶对比："><a href="#限流算法令牌桶和漏桶对比：" class="headerlink" title="限流算法令牌桶和漏桶对比："></a>限流算法令牌桶和漏桶对比：</h4><ul>
+<li>令牌桶是按照固定速率往桶中添加令牌，请求是否被处理需要看桶中令牌是否足够，当令牌数减为零时则拒绝新的请求；</li>
+<li>漏桶则是按照常量固定速率流出请求，流入请求速率任意，当流入的请求数累积到漏桶容量时，则新流入的请求被拒绝；</li>
+<li>令牌桶限制的是平均流入速率（允许突发请求，只要有令牌就可以处理，支持一次拿3个令牌，4个令牌），并允许一定程度突发流量；</li>
+<li>漏桶限制的是常量流出速率（即流出速率是一个固定常量值，比如都是1的速率流出，而不能一次是1，下次又是2），从而平滑突发流入速率；</li>
+<li>令牌桶允许一定程度的突发，而漏桶主要目的是平滑流入速率；</li>
+</ul>
+<h3 id="配置优化性能篇"><a href="#配置优化性能篇" class="headerlink" title="配置优化性能篇"></a>配置优化性能篇</h3><h4 id="TCP优化"><a href="#TCP优化" class="headerlink" title="TCP优化"></a>TCP优化</h4><h4 id="开启Gzip"><a href="#开启Gzip" class="headerlink" title="开启Gzip"></a>开启Gzip</h4><h4 id="开启缓存"><a href="#开启缓存" class="headerlink" title="开启缓存"></a>开启缓存</h4><h2 id="配置选项"><a href="#配置选项" class="headerlink" title="配置选项"></a>配置选项</h2><h4 id="虚拟主机与请求的转发"><a href="#虚拟主机与请求的转发" class="headerlink" title="虚拟主机与请求的转发"></a>虚拟主机与请求的转发</h4><h5 id="server-name匹配顺序"><a href="#server-name匹配顺序" class="headerlink" title="server_name匹配顺序"></a>server_name匹配顺序</h5><ol>
+<li>首先选择所有字符串完全匹配的server_name，如www.testweb.com</li>
+<li>其次选择通配符在前面的server_name，如*.testweb.com</li>
+<li>再次选择通配符在后面的server_name，如www.testweb.*</li>
+<li>最后选择使用正则表达式才匹配的server_name，如~^\.testweb\.com</li>
+</ol>
+<h5 id="location-匹配顺序"><a href="#location-匹配顺序" class="headerlink" title="location 匹配顺序"></a>location 匹配顺序</h5><ol>
+<li><p>= 表示把URI作为字符串，以便与参数中的uri做完全匹配。例如</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">location</span> =/ &#123;</div><div class="line">  <span class="comment">#只有用户请求是/时，才会使用location下的配置</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>~表示匹配URI时是字母大小写敏感的。</p>
+</li>
+<li><p>~*表示匹配URI是忽略字母大小写问题。</p>
+</li>
+<li><p>^~表示匹配URI时只需要其前半部分与uri参数匹配即可。例如：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">location</span><span class="regexp"> ^~</span> /images/&#123;</div><div class="line">  <span class="comment">#以/images/开始的请求都会匹配上</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>@表示仅用于Nginx服务内部请求之间的重定向，带有@的location不直接处理用户请求。</p>
+</li>
+</ol>
+<h4 id="文件路径定义"><a href="#文件路径定义" class="headerlink" title="文件路径定义"></a>文件路径定义</h4><figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">alias</span></div><div class="line">root</div></pre></td></tr></table></figure>
+<h5 id="根据HTTP返回码重定向"><a href="#根据HTTP返回码重定向" class="headerlink" title="根据HTTP返回码重定向"></a>根据HTTP返回码重定向</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">error_page	404 			/404.html</div><div class="line">error_page 	502 503 504	/50x.html</div><div class="line">error_page	403				http://example.com/forbidden.html;</div><div class="line">error_page	404				=@fetch;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>重定义错误码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">error_page	404	=200	/empty.gif</div><div class="line">error_page	404	=403	/forbidden.gif</div></pre></td></tr></table></figure>
+</li>
+<li><p>跳转后决定错误码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">error_page 404	= /empty.gif</div></pre></td></tr></table></figure>
+</li>
+<li><p>如果不想修改URI，只是想让这样的请求重定向到另一个location中进行处理，那么可以这样设置“</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">location /&#123;</div><div class="line">  error_page 	404</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="try-files"><a href="#try-files" class="headerlink" title="try_files"></a>try_files</h5><p>尝试按照顺序访问每一个path，如果可以有效的读取，就直接向用户返回这个path对应的文件请求结束，否则继续向访问。**必须保证一个uri参数存在。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">try_files</span> /system/maintenace.html <span class="variable">$uri</span> <span class="variable">$uri</span>/index.html <span class="variable">$uri</span>.html <span class="variable">@other</span>;</div><div class="line"><span class="attribute">location</span> <span class="variable">@other</span>&#123;</div><div class="line">  <span class="attribute">proxy_pass</span>	http://backend;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="内存及磁盘资源的分配"><a href="#内存及磁盘资源的分配" class="headerlink" title="内存及磁盘资源的分配"></a>内存及磁盘资源的分配</h4><h4 id="网络连接的设置"><a href="#网络连接的设置" class="headerlink" title="网络连接的设置"></a>网络连接的设置</h4><h5 id="发送响应的超时时间"><a href="#发送响应的超时时间" class="headerlink" title="发送响应的超时时间"></a>发送响应的超时时间</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">send_timeout 60</div></pre></td></tr></table></figure>
+<h4 id="reset-timeout-connection"><a href="#reset-timeout-connection" class="headerlink" title="reset_timeout_connection"></a>reset_timeout_connection</h4><p>连接超时后将通过向客户端发送RST包来直接重置连接。不同过四次握手，相比于正常的方式，FIN_WAIT_1、FIN_WAIT_2、TIME_WAIT状态的TCP连接。</p>
+<p>注意：使用RST重置包关闭连接会带来一些问题，默认情况下不会开启。</p>
+<h5 id="lingering-time"><a href="#lingering-time" class="headerlink" title="lingering_time"></a>lingering_time</h5><p>lingering_close起用后，这个配置对于上传大文件很有用，上文讲过，当用户请求的Content-Length大于max_client_body_size时，Nginx服务会立刻向用户发送413返回值，仍然持续不断的上传HTTP body，这时，经过了lingering_time设置后，Nginx将不管用户是否仍在上传，都会把连接关闭掉。</p>
+<h5 id="lingering-timeout"><a href="#lingering-timeout" class="headerlink" title="lingering_timeout"></a>lingering_timeout</h5><h5 id="keeplive-disale"><a href="#keeplive-disale" class="headerlink" title="keeplive_disale"></a>keeplive_disale</h5><p>针对浏览器限制keepalive</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keepalive_disable [msie6|safari|none]</div></pre></td></tr></table></figure>
+<h5 id="keepalive-timeout超时时间"><a href="#keepalive-timeout超时时间" class="headerlink" title="keepalive_timeout超时时间"></a>keepalive_timeout超时时间</h5><p>一个连接闲置超过一定时间后默认75s关闭。</p>
+<h5 id="keepalive-requests"><a href="#keepalive-requests" class="headerlink" title="keepalive_requests"></a>keepalive_requests</h5><p>一个keepalive长连接上允许承载的请求最大数.</p>
+<p>一个keepalive连接上默认最多只能发送100个请求。</p>
+<h5 id="tcp-nodelay"><a href="#tcp-nodelay" class="headerlink" title="tcp_nodelay"></a>tcp_nodelay</h5><p>确定对keepalive连接是否使用TCP_NODELAY选项</p>
+<h5 id="tcp-nopush"><a href="#tcp-nopush" class="headerlink" title="tcp_nopush"></a>tcp_nopush</h5><p>打开tcp_nopush后，将会在发送响应时把整个响应包头放到一个tcp包中发送。</p>
+<h4 id="MIME类型的设置"><a href="#MIME类型的设置" class="headerlink" title="MIME类型的设置"></a>MIME类型的设置</h4><h5 id="mime映射"><a href="#mime映射" class="headerlink" title="mime映射"></a>mime映射</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">types &#123;</div><div class="line">  text/html		html;</div><div class="line">  text/html		conf;</div><div class="line">  image/gif		gif;</div><div class="line">  image/jpeg	jpg;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="默认MIME-type"><a href="#默认MIME-type" class="headerlink" title="默认MIME type"></a>默认MIME type</h5><figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">default_type</span> text/plain;</div></pre></td></tr></table></figure>
+<p>找不到相应的MIME type与文件扩展名之间的映射时，使用默认的MIME type作为HTTP header中的Content-Type。</p>
+<h4 id="对客户端请求的限制"><a href="#对客户端请求的限制" class="headerlink" title="对客户端请求的限制"></a>对客户端请求的限制</h4><h5 id="按照HTTP方法名限制用户请求"><a href="#按照HTTP方法名限制用户请求" class="headerlink" title="按照HTTP方法名限制用户请求"></a>按照HTTP方法名限制用户请求</h5><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">limit_except method &#123;...&#125;</div></pre></td></tr></table></figure>
+<h5 id="HTTP请求包体的最大值"><a href="#HTTP请求包体的最大值" class="headerlink" title="HTTP请求包体的最大值"></a>HTTP请求包体的最大值</h5><figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">client_max_body_size</span> size</div></pre></td></tr></table></figure>
+<h5 id="对请求的限速limit-rate"><a href="#对请求的限速limit-rate" class="headerlink" title="对请求的限速limit_rate"></a>对请求的限速limit_rate</h5><figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">limit_rate</span> speed;</div></pre></td></tr></table></figure>
+<p>请求限制每秒传输的字节数。</p>
+<h5 id="limit-rate-after"><a href="#limit-rate-after" class="headerlink" title="limit_rate_after"></a>limit_rate_after</h5><p>向客户端发送的响应长度超过limit_rate_after后才开始限速。</p>
+<h4 id="文件操作的优化"><a href="#文件操作的优化" class="headerlink" title="文件操作的优化"></a>文件操作的优化</h4><h5 id="sendfile-系统调用"><a href="#sendfile-系统调用" class="headerlink" title="sendfile 系统调用"></a>sendfile 系统调用</h5><p>启用linux上的sendfile系统调用来发送文件，减少内核态禹用户态直接的内存复制，这样就会从磁盘读取文件后直接在内核态发送到网卡设备，提高了发送文件的效率。</p>
+<h5 id="AIO系统调用"><a href="#AIO系统调用" class="headerlink" title="AIO系统调用"></a>AIO系统调用</h5><p>是否在FreeBSD或Linux系统上启用内核级别的移步文件I/O功能。</p>
+<h5 id="directio"><a href="#directio" class="headerlink" title="directio"></a>directio</h5><p>对大文件的读取速度有优化作用</p>
+<h5 id="directio-alignment"><a href="#directio-alignment" class="headerlink" title="directio_alignment"></a>directio_alignment</h5><h5 id="打开文件缓存open-file-cache"><a href="#打开文件缓存open-file-cache" class="headerlink" title="打开文件缓存open_file_cache"></a>打开文件缓存open_file_cache</h5><p>存储信息</p>
+<ol>
+<li>文件句柄、文件大小和上次修改时间</li>
+<li>已经打开过的目录结构</li>
+<li>没有找到或者没有权限操作的文件信息。</li>
+</ol>
+<h5 id="是否缓存文件错误的信息open-file-cache-errors"><a href="#是否缓存文件错误的信息open-file-cache-errors" class="headerlink" title="是否缓存文件错误的信息open_file_cache_errors"></a>是否缓存文件错误的信息open_file_cache_errors</h5><h5 id="不被淘汰的最小访问次数"><a href="#不被淘汰的最小访问次数" class="headerlink" title="不被淘汰的最小访问次数"></a>不被淘汰的最小访问次数</h5><h5 id="检验缓存中元素有效性的频率"><a href="#检验缓存中元素有效性的频率" class="headerlink" title="检验缓存中元素有效性的频率"></a>检验缓存中元素有效性的频率</h5><h4 id="对客户端请求的特殊处理"><a href="#对客户端请求的特殊处理" class="headerlink" title="对客户端请求的特殊处理"></a>对客户端请求的特殊处理</h4><h5 id="忽略不合法的HTTP头部"><a href="#忽略不合法的HTTP头部" class="headerlink" title="忽略不合法的HTTP头部"></a>忽略不合法的HTTP头部</h5><h5 id="HTTP头部是否允许下划线"><a href="#HTTP头部是否允许下划线" class="headerlink" title="HTTP头部是否允许下划线"></a>HTTP头部是否允许下划线</h5><h5 id="对If-Modified-Since头部的处理策略"><a href="#对If-Modified-Since头部的处理策略" class="headerlink" title="对If-Modified-Since头部的处理策略"></a>对If-Modified-Since头部的处理策略</h5><p>服务器对比request中的if-modified-since时间，如果过期则返回内容，状态吗200，否则返回304 Not modified</p>
+<h5 id="文件未找到时是否记录到error日志"><a href="#文件未找到时是否记录到error日志" class="headerlink" title="文件未找到时是否记录到error日志"></a>文件未找到时是否记录到error日志</h5><h5 id="DNS解析地址"><a href="#DNS解析地址" class="headerlink" title="DNS解析地址"></a>DNS解析地址</h5><h5 id="DNS解析超时时间"><a href="#DNS解析超时时间" class="headerlink" title="DNS解析超时时间"></a>DNS解析超时时间</h5><h5 id="返回错误页面时，是否在Server中注明Nginx版本"><a href="#返回错误页面时，是否在Server中注明Nginx版本" class="headerlink" title="返回错误页面时，是否在Server中注明Nginx版本"></a>返回错误页面时，是否在Server中注明Nginx版本</h5><h3 id="开发一个简单的HTTP模块"><a href="#开发一个简单的HTTP模块" class="headerlink" title="开发一个简单的HTTP模块"></a>开发一个简单的HTTP模块</h3><h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><h5 id="整形的封装"><a href="#整形的封装" class="headerlink" title="整形的封装"></a>整形的封装</h5><h5 id="ngx-str-t字符串"><a href="#ngx-str-t字符串" class="headerlink" title="ngx_str_t字符串"></a>ngx_str_t字符串</h5><h5 id="ngx-list-t-链表"><a href="#ngx-list-t-链表" class="headerlink" title="ngx_list_t 链表"></a>ngx_list_t 链表</h5><h5 id="ngx-table-elt-t-HTTP头部"><a href="#ngx-table-elt-t-HTTP头部" class="headerlink" title="ngx_table_elt_t HTTP头部"></a>ngx_table_elt_t HTTP头部</h5><h5 id="ngx-buf-t-处理大数据"><a href="#ngx-buf-t-处理大数据" class="headerlink" title="ngx_buf_t 处理大数据"></a>ngx_buf_t 处理大数据</h5><h5 id="ngx-chain-t"><a href="#ngx-chain-t" class="headerlink" title="ngx_chain_t"></a>ngx_chain_t</h5>
+        
+      </div>
+      
+      
+      
+    </div>
+    
+
+
+
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Indice
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Panoramica
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categorie</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">1.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cgi"><span class="nav-number">1.1.</span> <span class="nav-text">cgi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fastcgi"><span class="nav-number">1.2.</span> <span class="nav-text">fastcgi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#php-fpm"><span class="nav-number">1.3.</span> <span class="nav-text">php-fpm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#限流"><span class="nav-number">1.4.</span> <span class="nav-text">限流</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#限流算法令牌桶和漏桶对比："><span class="nav-number">1.4.1.</span> <span class="nav-text">限流算法令牌桶和漏桶对比：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置优化性能篇"><span class="nav-number">1.5.</span> <span class="nav-text">配置优化性能篇</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP优化"><span class="nav-number">1.5.1.</span> <span class="nav-text">TCP优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开启Gzip"><span class="nav-number">1.5.2.</span> <span class="nav-text">开启Gzip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开启缓存"><span class="nav-number">1.5.3.</span> <span class="nav-text">开启缓存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置选项"><span class="nav-number">2.</span> <span class="nav-text">配置选项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#虚拟主机与请求的转发"><span class="nav-number">2.0.1.</span> <span class="nav-text">虚拟主机与请求的转发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#server-name匹配顺序"><span class="nav-number">2.0.1.1.</span> <span class="nav-text">server_name匹配顺序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#location-匹配顺序"><span class="nav-number">2.0.1.2.</span> <span class="nav-text">location 匹配顺序</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件路径定义"><span class="nav-number">2.0.2.</span> <span class="nav-text">文件路径定义</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#根据HTTP返回码重定向"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">根据HTTP返回码重定向</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#try-files"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">try_files</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存及磁盘资源的分配"><span class="nav-number">2.0.3.</span> <span class="nav-text">内存及磁盘资源的分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络连接的设置"><span class="nav-number">2.0.4.</span> <span class="nav-text">网络连接的设置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#发送响应的超时时间"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">发送响应的超时时间</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reset-timeout-connection"><span class="nav-number">2.0.5.</span> <span class="nav-text">reset_timeout_connection</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#lingering-time"><span class="nav-number">2.0.5.1.</span> <span class="nav-text">lingering_time</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lingering-timeout"><span class="nav-number">2.0.5.2.</span> <span class="nav-text">lingering_timeout</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#keeplive-disale"><span class="nav-number">2.0.5.3.</span> <span class="nav-text">keeplive_disale</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#keepalive-timeout超时时间"><span class="nav-number">2.0.5.4.</span> <span class="nav-text">keepalive_timeout超时时间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#keepalive-requests"><span class="nav-number">2.0.5.5.</span> <span class="nav-text">keepalive_requests</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#tcp-nodelay"><span class="nav-number">2.0.5.6.</span> <span class="nav-text">tcp_nodelay</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#tcp-nopush"><span class="nav-number">2.0.5.7.</span> <span class="nav-text">tcp_nopush</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIME类型的设置"><span class="nav-number">2.0.6.</span> <span class="nav-text">MIME类型的设置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#mime映射"><span class="nav-number">2.0.6.1.</span> <span class="nav-text">mime映射</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#默认MIME-type"><span class="nav-number">2.0.6.2.</span> <span class="nav-text">默认MIME type</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对客户端请求的限制"><span class="nav-number">2.0.7.</span> <span class="nav-text">对客户端请求的限制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#按照HTTP方法名限制用户请求"><span class="nav-number">2.0.7.1.</span> <span class="nav-text">按照HTTP方法名限制用户请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP请求包体的最大值"><span class="nav-number">2.0.7.2.</span> <span class="nav-text">HTTP请求包体的最大值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#对请求的限速limit-rate"><span class="nav-number">2.0.7.3.</span> <span class="nav-text">对请求的限速limit_rate</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#limit-rate-after"><span class="nav-number">2.0.7.4.</span> <span class="nav-text">limit_rate_after</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件操作的优化"><span class="nav-number">2.0.8.</span> <span class="nav-text">文件操作的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#sendfile-系统调用"><span class="nav-number">2.0.8.1.</span> <span class="nav-text">sendfile 系统调用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AIO系统调用"><span class="nav-number">2.0.8.2.</span> <span class="nav-text">AIO系统调用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#directio"><span class="nav-number">2.0.8.3.</span> <span class="nav-text">directio</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#directio-alignment"><span class="nav-number">2.0.8.4.</span> <span class="nav-text">directio_alignment</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#打开文件缓存open-file-cache"><span class="nav-number">2.0.8.5.</span> <span class="nav-text">打开文件缓存open_file_cache</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#是否缓存文件错误的信息open-file-cache-errors"><span class="nav-number">2.0.8.6.</span> <span class="nav-text">是否缓存文件错误的信息open_file_cache_errors</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#不被淘汰的最小访问次数"><span class="nav-number">2.0.8.7.</span> <span class="nav-text">不被淘汰的最小访问次数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#检验缓存中元素有效性的频率"><span class="nav-number">2.0.8.8.</span> <span class="nav-text">检验缓存中元素有效性的频率</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对客户端请求的特殊处理"><span class="nav-number">2.0.9.</span> <span class="nav-text">对客户端请求的特殊处理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#忽略不合法的HTTP头部"><span class="nav-number">2.0.9.1.</span> <span class="nav-text">忽略不合法的HTTP头部</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP头部是否允许下划线"><span class="nav-number">2.0.9.2.</span> <span class="nav-text">HTTP头部是否允许下划线</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#对If-Modified-Since头部的处理策略"><span class="nav-number">2.0.9.3.</span> <span class="nav-text">对If-Modified-Since头部的处理策略</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件未找到时是否记录到error日志"><span class="nav-number">2.0.9.4.</span> <span class="nav-text">文件未找到时是否记录到error日志</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DNS解析地址"><span class="nav-number">2.0.9.5.</span> <span class="nav-text">DNS解析地址</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DNS解析超时时间"><span class="nav-number">2.0.9.6.</span> <span class="nav-text">DNS解析超时时间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#返回错误页面时，是否在Server中注明Nginx版本"><span class="nav-number">2.0.9.7.</span> <span class="nav-text">返回错误页面时，是否在Server中注明Nginx版本</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发一个简单的HTTP模块"><span class="nav-number">2.1.</span> <span class="nav-text">开发一个简单的HTTP模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备工作"><span class="nav-number">2.1.1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#整形的封装"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">整形的封装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ngx-str-t字符串"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">ngx_str_t字符串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ngx-list-t-链表"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">ngx_list_t 链表</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ngx-table-elt-t-HTTP头部"><span class="nav-number">2.1.1.4.</span> <span class="nav-text">ngx_table_elt_t HTTP头部</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ngx-buf-t-处理大数据"><span class="nav-number">2.1.1.5.</span> <span class="nav-text">ngx_buf_t 处理大数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ngx-chain-t"><span class="nav-number">2.1.1.6.</span> <span class="nav-text">ngx_chain_t</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Tema &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

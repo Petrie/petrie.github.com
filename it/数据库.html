@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Petrie's Home">
+<meta property="og:url" content="http://petrie.github.com/it/数据库.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+<meta property="og:image" content="https://cwiki.apache.org/confluence/download/attachments/24193436/service.png?version=1&modificationDate=1295027310000&api=v2">
+<meta property="og:updated_time" content="2018-08-12T05:00:22.509Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petrie's Home">
+<meta name="twitter:description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+<meta name="twitter:image" content="https://cwiki.apache.org/confluence/download/attachments/24193436/service.png?version=1&modificationDate=1295027310000&api=v2">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/数据库.html"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '[object Object]');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="it">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-notes">
+    <a href="/it/summary2.html" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />notes</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categorie</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archivi</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline"></h1>
+
+<div class="post-meta">
+  
+  
+
+
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h2 id="缓存架构"><a href="#缓存架构" class="headerlink" title="缓存架构"></a>缓存架构</h2><ul>
+<li>进程内缓存</li>
+<li>到底选Redis还是Memcache，看看源码怎么说<ul>
+<li>什么时候倾向于选择Redis<ul>
+<li>复杂数据结构</li>
+<li>持久化：mc无法满足持久化的需求，只得选择redis</li>
+<li>天然高可用：支持主从</li>
+<li>存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>##数据库</p>
+<h3 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h3><ul>
+<li><p>redis、memcache、mongoDB 对比</p>
+<ul>
+<li><p>操作的便利性</p>
+<p>memcache数据结构单一</p>
+<p>redis丰富一些，数据操作方面，redis更好一些，较少的网络IO次数</p>
+<p>mongodb支持丰富的数据表达，索引，最类似关系型数据库，支持的查询语言非常丰富</p>
+</li>
+</ul>
+<p>​</p>
+</li>
+</ul>
+<h3 id="Mongodb"><a href="#Mongodb" class="headerlink" title="Mongodb"></a>Mongodb</h3><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><h4 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h4><ul>
+<li>索引基数：唯一值越多，基数越大，越有可能选择这个索引</li>
+</ul>
+<h4 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h4><h5 id="慢查询"><a href="#慢查询" class="headerlink" title="慢查询"></a>慢查询</h5><h5 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h5><table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qcache_free_blocks</td>
+<td>缓存中相邻内存块的个数。数目大说明可能有碎片。FLUSH QUERY CACHE 会对缓存中的碎片进行整理，从而得到一个空闲块。</td>
+</tr>
+<tr>
+<td>Qcache_free_memory</td>
+<td>缓存中的空闲内存。</td>
+</tr>
+<tr>
+<td>Qcache_hits</td>
+<td>每次查询在缓存中命中时就增大。</td>
+</tr>
+<tr>
+<td>Qcache_inserts</td>
+<td>每次插入一个查询时就增大。命中次数除以插入次数就是不中比率；用 1 减去这个值就是命中率。在上面这个例子中，大约有 87% 的查询都在缓存中命</td>
+</tr>
+<tr>
+<td>Qcache_lowmem_prunes</td>
+<td>缓存出现内存不足并且必须要进行清理以便为更多查询提供空间的次数。这个数字最好长时间来看；如果这个数字在不断增长，就表示可能碎片非常严重，或者内存很少。（上面的 free_blocks 和free_memory 可以告诉您属于哪种情况）。</td>
+</tr>
+<tr>
+<td>Qcache_not_cached</td>
+<td>不适合进行缓存的查询的数量，通常是由于这些查询不是 SELECT 语句。</td>
+</tr>
+<tr>
+<td>Qcache_queries_in_cache</td>
+<td>当前缓存的查询（和响应）的数量。</td>
+</tr>
+<tr>
+<td>Qcache_total_blocks</td>
+<td>缓存中块的数量。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="缓冲区和缓存"><a href="#缓冲区和缓存" class="headerlink" title="缓冲区和缓存"></a>缓冲区和缓存</h5><ul>
+<li><p>服务端的设置 </p>
+<ul>
+<li>显示打开表的活动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SHOW STATUS LIKE &apos;open%tables&apos;;</div><div class="line">+---------------+-------+</div><div class="line">| Variable_name | Value |</div><div class="line">+---------------+-------+</div><div class="line">| Open_tables   | 5000  |</div><div class="line">| Opened_tables | 195   |</div><div class="line">+---------------+-------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<ul>
+<li>显示线程使用统计信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SHOW STATUS LIKE &apos;threads%&apos;;</div><div class="line">+-------------------+--------+</div><div class="line">| Variable_name     | Value  |</div><div class="line">+-------------------+--------+</div><div class="line">| Threads_cached    | 27     |</div><div class="line">| Threads_connected | 15     |</div><div class="line">| Threads_created   | 838610 |</div><div class="line">| Threads_running   | 3      |</div><div class="line">+-------------------+--------+</div><div class="line">4 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<ul>
+<li>确定关键字效率</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show status like &apos;%key_read%&apos;;</div><div class="line">+-------------------+-----------+</div><div class="line">| Variable_name     | Value     |</div><div class="line">+-------------------+-----------+</div><div class="line">| Key_read_requests | 163554268 |</div><div class="line">| Key_reads         | 98247     |</div><div class="line">+-------------------+-----------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<ul>
+<li>确定临时表的使用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SHOW STATUS LIKE &apos;created_tmp%&apos;;</div><div class="line">+-------------------------+-------+</div><div class="line">| Variable_name           | Value |</div><div class="line">+-------------------------+-------+</div><div class="line">| Created_tmp_disk_tables | 30660 |</div><div class="line">| Created_tmp_files       | 2     |</div><div class="line">| Created_tmp_tables      | 32912 |</div><div class="line">+-------------------------+-------+</div><div class="line">3 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+</li>
+<li><p>每个会话的设置</p>
+<ul>
+<li><h5 id="显示排序统计信息"><a href="#显示排序统计信息" class="headerlink" title="显示排序统计信息"></a>显示排序统计信息</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SHOW STATUS LIKE &quot;sort%&quot;;</div><div class="line">+-------------------+---------+</div><div class="line">| Variable_name     | Value   |</div><div class="line">+-------------------+---------+</div><div class="line">| Sort_merge_passes | 1       |</div><div class="line">| Sort_range        | 79192   |</div><div class="line">| Sort_rows         | 2066532 |</div><div class="line">| Sort_scan         | 44006   |</div><div class="line">+-------------------+---------+</div><div class="line">4 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+</li>
+<li><p>确定表扫描比率</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SHOW STATUS LIKE &quot;com_select&quot;;</div><div class="line">+---------------+--------+</div><div class="line">| Variable_name | Value  |</div><div class="line">+---------------+--------+</div><div class="line">| Com_select    | 318243 |</div><div class="line">+---------------+--------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; SHOW STATUS LIKE &quot;handler_read_rnd_next&quot;;</div><div class="line">+-----------------------+-----------+</div><div class="line">| Variable_name         | Value     |</div><div class="line">+-----------------------+-----------+</div><div class="line">| Handler_read_rnd_next | 165959471 |</div><div class="line">+-----------------------+-----------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h4><blockquote>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html</a></p>
+</blockquote>
+<h5 id="mysql三个隐藏的key"><a href="#mysql三个隐藏的key" class="headerlink" title="mysql三个隐藏的key"></a>mysql三个隐藏的key</h5><ul>
+<li>一个6字节的DB_TRX_ID指示最后一个插入或更新当前行的事务</li>
+<li>1个字节用来标记当前行时候被删除</li>
+<li>一个7字节的DB_ROLL_PTR回滚指针，指向undo log</li>
+</ul>
+<h4 id="排它锁和共享锁"><a href="#排它锁和共享锁" class="headerlink" title="排它锁和共享锁"></a>排它锁和共享锁</h4><p>排他锁、共享锁。共享锁针对读，排他锁针对写，完全等同读写锁的概念。如果某个事务在更新某行（排他锁），则其他事物无论是读还是写本行都必须等待；如果某个事物读某行（共享锁），则其他读的事物无需等待，而写事物则需等待。</p>
+<h4 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h4><blockquote>
+<p><a href="https://amao12580.github.io/post/2016/06/What-is-a-transaction/" target="_blank" rel="external">https://amao12580.github.io/post/2016/06/What-is-a-transaction/</a></p>
+<p><a href="http://tech.meituan.com/innodb-lock.html" target="_blank" rel="external">http://tech.meituan.com/innodb-lock.html</a></p>
+<p><a href="http://hedengcheng.com/?p=148" target="_blank" rel="external">http://hedengcheng.com/?p=148</a></p>
+</blockquote>
+<h4 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h4><h4 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h4><table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读(Read Uncommitted)</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>已提交读(Read Commited)</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>重复读 (Repeatable read)</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>序列化((Serializable)</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>脏读：当一个事务对数据进行修改但未提交事务，另外一个事务访问并使用了这个数据</li>
+<li>不可重复读：事务1，多次读取同一数据。在两次读取之间，事务2更新了此数据，事务1在两次会读到不同的数据，因此称为不可重复读。</li>
+<li>幻读：事务1对表所有数据做了更新，事务2向表中插入一条新数据。事务1后续会发现还有没更新的数据，就好像产生了幻觉一样。</li>
+</ul>
+<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><h4 id="MyISAM与InnoDB索引的区别"><a href="#MyISAM与InnoDB索引的区别" class="headerlink" title="MyISAM与InnoDB索引的区别"></a>MyISAM与InnoDB索引的区别</h4><ul>
+<li>innodb 支持行级锁，myisam只支持表索引</li>
+<li>MyISAM 支持全文索引，Innodb 直到5.6才支持</li>
+<li>Innodb实现了事务、外键。MyISAM不支持</li>
+</ul>
+<h4 id="InnoDB的Primary-Index-和-secondary-Index有何区别？"><a href="#InnoDB的Primary-Index-和-secondary-Index有何区别？" class="headerlink" title="InnoDB的Primary Index 和 secondary Index有何区别？"></a>InnoDB的Primary Index 和 secondary Index有何区别？</h4><h4 id="int-4-vs-int-11"><a href="#int-4-vs-int-11" class="headerlink" title="int(4) vs int(11)"></a>int(4) vs int(11)</h4><p>The x in INT(x) has nothing to do with space requirements or any other performance issues, it’s really just the display width. Generally setting the display widths to a reasonable value is mostly useful with the UNSIGNED ZEROFILL option.</p>
+<ul>
+<li>the <code>UNSIGNED ZEROFILL</code> option.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//INT(4) UNSIGNED ZEROFILL</div><div class="line">0001</div><div class="line">0002 </div><div class="line">...</div><div class="line">0099</div><div class="line">...</div><div class="line">0999</div><div class="line">...</div><div class="line">9999</div><div class="line">...</div><div class="line">10000</div><div class="line"></div><div class="line">//INT(2) UNSIGNED ZEROFILL</div><div class="line">01</div><div class="line">02 </div><div class="line">...</div><div class="line">09</div><div class="line">...</div><div class="line">99</div><div class="line">...</div><div class="line">100</div></pre></td></tr></table></figure>
+<ul>
+<li><p>Without the <code>UNSIGNED ZEROFILL</code> option</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//INT(4)</div><div class="line">   1</div><div class="line">   2 </div><div class="line">...</div><div class="line">  99</div><div class="line">...</div><div class="line"> 999</div><div class="line">...</div><div class="line">9999</div><div class="line">...</div><div class="line">10000</div><div class="line"></div><div class="line">//INT(2)</div><div class="line"> 1</div><div class="line"> 2 </div><div class="line">...</div><div class="line"> 9</div><div class="line">...</div><div class="line">99</div><div class="line">...</div><div class="line">100</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="varchar-vs-char"><a href="#varchar-vs-char" class="headerlink" title="varchar vs char"></a>varchar vs char</h4><ul>
+<li>variable-length vs fixed</li>
+</ul>
+<p>The length of a <code>CHAR</code> column is fixed to the length that you declare when you create the table.</p>
+<p>Values in <code>VARCHAR</code> columns are variable-length strings.</p>
+<ul>
+<li>varchar 存储字符串长度</li>
+</ul>
+<p>In contrast to <code>CHAR</code>, <code>VARCHAR</code> values are stored as a 1-byte or 2-byte length prefix plus data.</p>
+<ul>
+<li>varchar trailing space</li>
+</ul>
+<p>If a given value is stored into the <code>CHAR(4)</code> and <code>VARCHAR(4)</code> columns, the values retrieved from the columns are not always the same because trailing spaces are removed from <code>CHAR</code> columns upon retrieval. The following example illustrates this difference:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">mysql&gt; CREATE TABLE vc (v VARCHAR(4), c CHAR(4));</div><div class="line">Query OK, 0 rows affected (0.01 sec)</div><div class="line"></div><div class="line">mysql&gt; INSERT INTO vc VALUES ('ab  ', 'ab  ');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; SELECT CONCAT('(', v, ')'), CONCAT('(', c, ')') FROM vc;</div><div class="line">+---------------------+---------------------+</div><div class="line">| CONCAT('(', v, ')') | CONCAT('(', c, ')') |</div><div class="line">+---------------------+---------------------+</div><div class="line">| (ab  )              | (ab)                |</div><div class="line">+---------------------+---------------------+</div><div class="line">1 row in set (0.06 sec)</div></pre></td></tr></table></figure>
+<h4 id="DELETE-TRUNCATE"><a href="#DELETE-TRUNCATE" class="headerlink" title="DELETE TRUNCATE"></a>DELETE TRUNCATE</h4><p>Basically DELETE TABLE is logged operation and every row deleted is logged. Therefore the process is usually slow. TRUNCATE TABLE also deletes rows in a table but it will not log any of the rows deleted.  The process is faster in comparison. TRUNCATE TABLE can be rolled back and is functionally similar to the DELETE statement using no WHERE clause.</p>
+<h4 id="float-double"><a href="#float-double" class="headerlink" title="float double"></a>float double</h4><ul>
+<li><p>Floating point numbers are stored in FLOAT with eight place accuracy and it has four bytes.</p>
+</li>
+<li><p>Floating point numbers are stored in DOUBLE with accuracy of 18 places and it has eight bytes.</p>
+<p>float tips</p>
+<blockquote>
+<p>MySQL permits a nonstandard syntax: FLOAT(M,D) or REAL(M,D) or DOUBLE PRECISION(M,D). Here, “(M,D)” means than values can be stored with up to M digits in total, of which D digits may be after the decimal point. For example, a column defined as FLOAT(7,4) will look like -999.9999 when displayed. MySQL performs rounding when storing values, so if you insert 999.00009 into a FLOAT(7,4) column, the approximate result is 999.0001.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="varchar-n-可以存储几个中文"><a href="#varchar-n-可以存储几个中文" class="headerlink" title="varchar(n) 可以存储几个中文"></a>varchar(n) 可以存储几个中文</h4><p>varchar(n) 表示n个字符，无论汉字和英文，<code>MySql</code>都能存入 <code>n</code> 个字符，仅实际字节长度有所区别。</p>
+<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><h4 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h4><blockquote>
+<p><a href="https://redis.io/topics/replication" target="_blank" rel="external">https://redis.io/topics/replication</a></p>
+</blockquote>
+<h4 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h4><h4 id="数据持久化"><a href="#数据持久化" class="headerlink" title="数据持久化"></a>数据持久化</h4><h5 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h5><ol>
+<li>fork出一个子进程</li>
+<li>通过save 指令配置10分钟以内有1000次写入就生成快照</li>
+<li>rdb文件不会损坏：临时文件，通过原子操作rename</li>
+</ol>
+<h5 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h5><ol>
+<li>不记录对数据无影响的命令</li>
+<li>fork进程，遍历数据</li>
+<li>清空缓存，rename临时文件</li>
+</ol>
+<ul>
+<li><p>AOF可靠性设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">appendfsync no</div><div class="line">appendfsync everysec </div><div class="line">appendfsync always</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><p>字符串、散列、列表、集合、有序集合、HyperLogLog</p>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><ul>
+<li>daemonize no 默认情况下，redis不是在后台运行的，如果需要在后台运行，把该项的值更改为yes</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">daemonize yes</div></pre></td></tr></table></figure>
+<ul>
+<li>timeout设置客户端连接时的超时时间，单位为秒。当客户端在这段时间内没有发出任何指令，那么关闭该连接，0是关闭此设置</li>
+<li>loglevel 日志级别</li>
+<li>logfile 日志文件地址</li>
+<li>可用数据库 database </li>
+</ul>
+<h5 id="rdb"><a href="#rdb" class="headerlink" title="rdb"></a>rdb</h5><ul>
+<li>快照save <second> <changes> 指出在多长时间有多少次更新，就将数据同步到文件rdb。</changes></second></li>
+</ul>
+<ul>
+<li>rdbcompression yes 存储至本地数据时（持久化到rdb文件）是否压缩数据，默认为yes。</li>
+<li>dbfile dumo.rdb 本地持久化数据库文件名</li>
+<li><p>数据库镜像备份的文件放置的路径。  <figure class="highlight plain"><figcaption><span>./``` </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">##### 复制</div><div class="line"></div><div class="line">- 主从复制. 设置该数据库为其他数据库的从数据库.  ```slaveof &lt;masterip&gt; &lt;masterport&gt;</div></pre></td></tr></table></figure></p>
+</li>
+<li><p>当master服务设置了密码保护时(用requirepass制定的密码) <figure class="highlight plain"><figcaption><span><master-password>```</master-password></span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">- ```slave-serve-stale-data yes```如果slave-serve-stale-data设置为yes(默认设置)，从库会继续相应客户端的请求。如果slave-serve-stale-data是指为no，出去INFO和SLAVOF命令之外的任何请求都会返回一个错误&quot;SYNC with master in progress&quot;</div><div class="line"></div><div class="line">##### 约束</div><div class="line"></div><div class="line">- ```maxclients 128```设置同一时间最大客户端连接数，默认无限制，Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数。</div><div class="line"></div><div class="line">- ```maxmemory &lt;bytes&gt;``` 指定Redis最大内存限制，Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key,Redis同时也会移除空的list对象</div><div class="line"></div><div class="line">- ```maxmemory-policy volatile-lru``` 当内存达到最大值的时候Redis会选择删除哪些数据？</div><div class="line"></div><div class="line">  有五种方式可供选择</div><div class="line"></div><div class="line">  - volatile-lru -&gt; 利用LRU算法移除设置过过期时间的key (LRU:最近使用 Least Recently Used )</div><div class="line">  - allkeys-lru -&gt; 利用LRU算法移除任何key</div><div class="line">  - volatile-random -&gt; 移除设置过过期时间的随机key</div><div class="line">  - allkeys-&gt;random -&gt; remove a random key, any key</div><div class="line">  - volatile-ttl -&gt; 移除即将过期的key(minor TTL)</div><div class="line">  - noeviction -&gt; 不移除任何可以，只是返回一个写错误</div><div class="line"></div><div class="line">##### AOF</div><div class="line"></div><div class="line">- 开启append only模式之后，redis会把所接收到的每一次写操作请求都追加到appendonly.aof文件中，当redis重新启动时，会从该文件恢复出之前的状态。</div><div class="line"></div><div class="line">```shell</div><div class="line">appendonly no</div><div class="line">appendfilename appendonly.aof</div></pre></td></tr></table></figure></p>
+</li>
+</ul>
+<p>Redis支持三种同步AOF文件的策略:</p>
+<ul>
+<li>no: 不进行同步，系统去操作 . Faster.</li>
+<li>always: always表示每次有写操作都进行同步. Slow, Safest.</li>
+<li>everysec: 表示对写操作进行累积，每秒同步一次. Compromise.</li>
+</ul>
+<ul>
+<li>当AOF文件增长到一定大小的时候Redis能够调用 BGREWRITEAOF 对日志文件进行重写 </li>
+</ul>
+<h5 id="slow-log"><a href="#slow-log" class="headerlink" title="slow log"></a>slow log</h5><p>可以通过两个参数设置slow log</p>
+<ul>
+<li>一个是告诉Redis执行超过多少时间被记录的参数slowlog-log-slower-than(微妙)，</li>
+<li>另一个是slow log 的长度。当一个新命令被记录的时候最早的命令将被从队列中移除</li>
+</ul>
+<h4 id="高级配置"><a href="#高级配置" class="headerlink" title="高级配置"></a>高级配置</h4><h5 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h5><ul>
+<li>当hash中包含超过指定元素个数并且最大的元素没有超过临界时，hash将以一种特殊的编码方式（大大减少内存使用）来存储，Redis Hash对应Value内部实际就是一个HashMap，实际这里会有2种不同实现.这个Hash的成员比较少时Redis为了节省内存会采用类似一维数组的方式来紧凑存储，而不会采用真正的HashMap结构，对应的value redisObject的encoding为zipmap。当成员数量增大时会自动转成真正的HashMap,此时encoding为ht。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hash-max-zipmap-entries 512</div><div class="line">hash-max-zipmap-value 64</div></pre></td></tr></table></figure>
+<h5 id="list"><a href="#list" class="headerlink" title="list"></a>list</h5><ul>
+<li>list数据类型多少节点以下会采用去指针的紧凑存储格式。</li>
+<li>list数据类型节点值大小小于多少字节会采用紧凑存储格式。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">list-max-ziplist-entries 512</div><div class="line">list-max-ziplist-value 64</div></pre></td></tr></table></figure>
+<h5 id="set"><a href="#set" class="headerlink" title="set"></a>set</h5><ul>
+<li>set数据类型内部数据如果全部是数值型，且包含多少节点以下会采用紧凑格式存储。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set-max-intset-entries 512</div></pre></td></tr></table></figure>
+<p>zsort</p>
+<ul>
+<li>zsort数据类型多少节点以下会采用去指针的紧凑存储格式。</li>
+<li>zsort数据类型节点值大小小于多少字节会采用紧凑存储格式。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">zset-max-ziplist-entries 128</div><div class="line">zset-max-ziplist-value 64</div></pre></td></tr></table></figure>
+<h5 id="include"><a href="#include" class="headerlink" title="include"></a>include</h5><ul>
+<li>指定包含其它的配置文件，可以在同一主机上多个Redis实例之间使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件</li>
+</ul>
+<h3 id="codis"><a href="#codis" class="headerlink" title="codis"></a>codis</h3><p>###Predis</p>
+<h3 id="memcache"><a href="#memcache" class="headerlink" title="memcache"></a>memcache</h3><h4 id="cas"><a href="#cas" class="headerlink" title="cas"></a>cas</h4><p><strong>check and set (乐观锁的概念)</strong></p>
+<p>Memcached 1.2.5以及更高版本，提供了gets和cas命令，它们可以解决上面的问题。如果您使用gets命令查询某个key的cache会给您返回该item当前值的唯一标识。如果您覆写了这个item并想把它写回到Memcached中，您可以通过cas命令把那唯一标识送给 Memcached。如果该Item存放在Memcached中的唯一标识与您提供的一致，您的写操作将会成功。如果另一个进程在这期间也修改了这个Item，那么该Item存放在Memcached中的唯一标识将会改变，您的写操作就会失败。</p>
+<h2 id="swoole"><a href="#swoole" class="headerlink" title="swoole"></a>swoole</h2><h3 id="异步mysql"><a href="#异步mysql" class="headerlink" title="异步mysql"></a>异步mysql</h3><blockquote>
+<p><a href="http://www.programgo.com/article/65853285546/" target="_blank" rel="external">http://www.programgo.com/article/65853285546/</a></p>
+<p><a href="http://rango.swoole.com/archives/288" target="_blank" rel="external">http://rango.swoole.com/archives/288</a></p>
+</blockquote>
+<h2 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h2><blockquote>
+<p><a href="https://www.ibm.com/developerworks/cn/data/library/bd-zookeeper/" target="_blank" rel="external">https://www.ibm.com/developerworks/cn/data/library/bd-zookeeper/</a></p>
+<p><a href="http://zookeeper.apache.org/doc/trunk/zookeeperTutorial.html?cm_mc_uid=76943637784814694455375&amp;cm_mc_sid_50200000=1489242071" target="_blank" rel="external">http://zookeeper.apache.org/doc/trunk/zookeeperTutorial.html?cm_mc_uid=76943637784814694455375&amp;cm_mc_sid_50200000=1489242071</a></p>
+</blockquote>
+<h3 id="部署架构图"><a href="#部署架构图" class="headerlink" title="部署架构图"></a>部署架构图</h3><p><img src="https://cwiki.apache.org/confluence/download/attachments/24193436/service.png?version=1&amp;modificationDate=1295027310000&amp;api=v2" alt="kafka架构图"></p>
+<h2 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h2><blockquote>
+<p><a href="http://blog.csdn.net/v_july_v/article/details/6637014" target="_blank" rel="external">http://blog.csdn.net/v_july_v/article/details/6637014</a></p>
+</blockquote>
+<h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><h3 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h3><blockquote>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-kafka/" target="_blank" rel="external">https://www.ibm.com/developerworks/cn/opensource/os-cn-kafka/</a></p>
+<p><a href="http://www.infoq.com/cn/articles/kafka-analysis-part-1" target="_blank" rel="external">http://www.infoq.com/cn/articles/kafka-analysis-part-1</a></p>
+</blockquote>
+<h4 id="设计目标"><a href="#设计目标" class="headerlink" title="设计目标"></a>设计目标</h4><ul>
+<li>以时间复杂度为O(1)的方式提供消息持久化能力，即使对TB级以上数据也能保证常数时间复杂度的访问性能。</li>
+<li>支持Kafka Server间的消息分区，及分布式消费，同时保证每个Partition内的消息顺序传输。</li>
+<li>同时支持离线数据处理和实时数据处理。</li>
+<li>Scale out：支持在线水平扩展。</li>
+</ul>
+<h2 id="LVS"><a href="#LVS" class="headerlink" title="LVS"></a>LVS</h2><h2 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h2><h3 id="sql注入"><a href="#sql注入" class="headerlink" title="sql注入"></a>sql注入</h3><h3 id="xss"><a href="#xss" class="headerlink" title="xss"></a>xss</h3><h2 id="RPC调用"><a href="#RPC调用" class="headerlink" title="RPC调用"></a>RPC调用</h2><h3 id="thrift"><a href="#thrift" class="headerlink" title="thrift"></a>thrift</h3><h2 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><h4 id="DES加密算法"><a href="#DES加密算法" class="headerlink" title="DES加密算法"></a>DES加密算法</h4><p>DES加密算法是一种分组密码，以64位为分组对数据加密，它的密钥长度是56位，加密解密用同一算法。DES加密算法是对密钥进行保密，而公开算法，包括加密和解密算法。这样，只有掌握了和发送方相同密钥的人才能解读由DES<a href="http://www.cksis.com/blog/category/jiamisuanfa" target="_blank" rel="external">加密算法</a>加密的密文数据。因此，破译DES加密算法实际上就是搜索密钥的编码。对于56位长度的密钥来说，如果用穷举法来进行搜索的话，其运算次数为256。</p>
+<p>随着计算机系统能力的不断发展，DES的安全性比它刚出现时会弱得多，然而从非关键性质的实际出发，仍可以认为它是足够的。不过，DES现在仅用于旧系统的鉴定，而更多地选择新的加密标准。</p>
+<h4 id="AES加密算法"><a href="#AES加密算法" class="headerlink" title="AES加密算法"></a>AES加密算法</h4><p>AES加密算法是密码学中的高级加密标准，该加密算法采用对称分组密码体制，密钥长度的最少支持为128、192、256，分组长度128位，算法应易于各种硬件和软件实现。这种加密算法是美国联邦政府采用的区块加密标准，这个标准用来替代原先的DES，已经被多方分析且广为全世界所使用。</p>
+<h4 id="RSA加密算法"><a href="#RSA加密算法" class="headerlink" title="RSA加密算法"></a>RSA加密算法</h4><p>RSA加密算法是目前最有影响力的<a href="http://www.cksis.com/blog/892-gongyuejiamisuanfa.html" target="_blank" rel="external">公钥加密</a>算法，并且被普遍认为是目前最优秀的公钥方案之一。RSA是第一个能同时用于加密和数宇签名的算法，它能够抵抗到目前为止已知的所有密码攻击，已被ISO推荐为公钥数据加密标准。RSA加密算法基于一个十分简单的数论事实：将两个大素数相乘十分容易，但那时想要，但那时想要对其乘积进行因式分解却极其困难，因此可以将乘积公开作为加密密钥。</p>
+<h4 id="base64加密算法"><a href="#base64加密算法" class="headerlink" title="base64加密算法"></a>base64加密算法</h4><p>Base64加密算法是网络上最常见的用于传输8bit字节代码的编码方式之一，Base64编码可用于在HTTP环境下传递较长的标识信息。例如，在JAVAPERSISTENCE系统HIBEMATE中，采用了Base64来将一个较长的唯一标识符编码为一个字符串，用作HTTP表单和HTTPGETURL中的参数。在其他应用程序中，也常常需要把二进制数据编码为适合放在URL（包括隐藏表单域）中的形式。此时，采用Base64编码不仅比较简短，同时也具有不可读性，即所编码的数据不会被人用肉眼所直接看到。</p>
+<h4 id="MD5加密算法"><a href="#MD5加密算法" class="headerlink" title="MD5加密算法"></a>MD5加密算法</h4><p>MD5为计算机安全领域广泛使用的一种散列函数，用以提供消息的完整性保护。对<a href="http://www.cksis.com/blog/316-md5jiamiyingyong.html" target="_blank" rel="external">MD5加密算法</a>简要的叙述可以为：MD5以512位分组来处理输入的信息，且每一分组又被划分为16个32位子分组，经过了一系列的处理后，算法的输出由四个32位分组组成，将这四个32位分组级联后将生成—个128位散列值。</p>
+<h4 id="SHA1加密算法"><a href="#SHA1加密算法" class="headerlink" title="SHA1加密算法"></a>SHA1加密算法</h4><p>SHA1是和MD5一样流行的消息摘要算法。SHA加密算法模仿MD4加密算法。SHA1设计为和数字签名算法（ＤＳＡ）一起使用。</p>
+<h2 id="字符编码-amp-字符集"><a href="#字符编码-amp-字符集" class="headerlink" title="字符编码&amp;字符集"></a>字符编码&amp;字符集</h2><blockquote>
+<p><a href="http://cenalulu.github.io/linux/character-encoding/" target="_blank" rel="external">http://cenalulu.github.io/linux/character-encoding/</a></p>
+</blockquote>
+<h3 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h3><p>字符集就规定了某个文字对应的二进制数字存放方式（编码）和某串二进制数值代表了哪个文字（解码）的转换关系。 </p>
+<h3 id="字符编码"><a href="#字符编码" class="headerlink" title="字符编码"></a>字符编码</h3><ul>
+<li><code>字库表</code>决定了整个字符集能够展现表示的所有字符的范围。</li>
+<li><code>编码字符集</code>，即用一个编码值<code>code point</code>来表示一个字符在字库中的位置。</li>
+<li><code>字符编码</code>，将编码字符集和实际存储数值之间的转换关系。</li>
+</ul>
+<h3 id="UTF-8和Unicode的关系"><a href="#UTF-8和Unicode的关系" class="headerlink" title="UTF-8和Unicode的关系"></a>UTF-8和Unicode的关系</h3><ul>
+<li>Unicode就是上文中提到的编码字符集，而UTF-8就是字符编码，即Unicode规则字库的一种实现形式。</li>
+<li>Unicode的编号从<code>0000</code>开始一直到<code>10FFFF</code>共分为16个Plane，每个Plane中有65536个字符。而UTF-8则只实现了第一个Plane，可见UTF-8虽然是一个当今接受度最广的字符集编码，但是它并没有涵盖整个Unicode的字库，这也造成了它在某些场景下对于特殊字符的处理困难（下文会有提到）。</li>
+</ul>
+<h3 id="UTF-8编码简介"><a href="#UTF-8编码简介" class="headerlink" title="UTF-8编码简介"></a>UTF-8编码简介</h3><p>UTF-8编码为变长编码。最小编码单位（<code>code unit</code>）为一个字节。一个字节的前1-3个bit为描述性部分，后面为实际序号部分。</p>
+<ul>
+<li>如果一个字节的第一位为0，那么代表当前字符为单字节字符，占用一个字节的空间。0之后的所有部分（7个bit）代表在Unicode中的序号。</li>
+<li>如果一个字节以110开头，那么代表当前字符为双字节字符，占用2个字节的空间。110之后的所有部分（5个bit）加上后一个字节的除10外的部分（6个bit）代表在Unicode中的序号。且第二个字节以10开头</li>
+<li>如果一个字节以1110开头，那么代表当前字符为三字节字符，占用2个字节的空间。110之后的所有部分（5个bit）加上后两个字节的除10外的部分（12个bit）代表在Unicode中的序号。且第二、第三个字节以10开头</li>
+<li>如果一个字节以10开头，那么代表当前字节为多字节字符的第二个字节。10之后的所有部分（6个bit）和之前的部分一同组成在Unicode中的序号。</li>
+</ul>
+<p>细心的读者不难从以上的简单介绍中得出以下规律：</p>
+<ul>
+<li>3个字节的UTF-8十六进制编码一定是以<code>E</code>开头的</li>
+<li>2个字节的UTF-8十六进制编码一定是以<code>C</code>或<code>D</code>开头的</li>
+<li>1个字节的UTF-8十六进制编码一定是以比<code>8</code>小的数字开头的</li>
+</ul>
+<h2 id="工作内容"><a href="#工作内容" class="headerlink" title="工作内容"></a>工作内容</h2><h3 id="任务发布"><a href="#任务发布" class="headerlink" title="任务发布"></a>任务发布</h3><p>### </p>
+<h2 id="微信红包"><a href="#微信红包" class="headerlink" title="微信红包"></a>微信红包</h2><blockquote>
+<p><a href="http://www.infoq.com/cn/articles/2017hongbao-weixin" target="_blank" rel="external">http://www.infoq.com/cn/articles/2017hongbao-weixin</a></p>
+<p><a href="http://colobu.com/2015/05/04/weixin-red-packets-design-discussion/" target="_blank" rel="external">http://colobu.com/2015/05/04/weixin-red-packets-design-discussion/</a></p>
+</blockquote>
+<h3 id="微信红包两大业务特点"><a href="#微信红包两大业务特点" class="headerlink" title="微信红包两大业务特点"></a>微信红包两大业务特点</h3><ol>
+<li>微信红包业务比普通商品“秒杀”有更海量的并发要求。</li>
+<li>微信红包业务要求更严格的安全级别。</li>
+</ol>
+<h3 id="微信红包技术难点"><a href="#微信红包技术难点" class="headerlink" title="微信红包技术难点"></a>微信红包技术难点</h3><ol>
+<li>事务级操作量大</li>
+<li>事务性要求严格</li>
+</ol>
+<h3 id="解决高并发问题通常使用的方案"><a href="#解决高并发问题通常使用的方案" class="headerlink" title="解决高并发问题通常使用的方案"></a>解决高并发问题通常使用的方案</h3><ol>
+<li><p>使用内存操作替代实时的DB事务操作。 </p>
+<blockquote>
+<p>这种方案的优点是通过用内存操作代替磁盘，提高了并发性能。两个存储可能失败</p>
+</blockquote>
+</li>
+<li><p>使用乐观锁替代悲观锁。</p>
+<blockquote>
+<p>所谓悲观锁，是关系数据库管理系统里的一种并发控制的方法。它可以阻止一个事务以影响其他用户的方式来修改数据。如果一个事务执行的操作对某行数据应用了锁，那只有当这个事务把锁释放，其他事务才能够执行与该锁冲突的操作。对应于上文分析中的“并发请求抢锁”行为。</p>
+<p>所谓乐观锁，它假设多用户并发的事务在处理时不会彼此互相影响，各事务能够在不产生锁的情况下处理各自影响的那部分数据。在提交数据更新之前，每个事务会先检查在该事务读取数据后，有没有其他事务又修改了该数据。如果其他事务有更新的话，正在提交的事务会进行回滚。</p>
+<p>商品“秒杀”系统中，乐观锁的具体应用方法，是在DB的“库存”记录中维护一个版本号。在更新“库存”的操作进行前，先去DB获取当前版本号。在更新库存的事务提交时，检查该版本号是否已被其他事务修改。如果版本没被修改，则提交事务，且版本号加1；如果版本号已经被其他事务修改，则回滚事务，并给上层报错。</p>
+</blockquote>
+<p>应用于微信红包系统，则会存在下面三个问题</p>
+<blockquote>
+<ol>
+<li>拆红包采用乐观锁，并发抢到相同版本号的拆红包请求中，只有一个能拆红包成功，其他的请求将事        务回滚并返回失败，给用户报错，用户体验完全不可接受。</li>
+<li>如果采用乐观锁，将会导致第一时间同时拆红包的用户有一部分直接返回失败，反而那些“手慢”的用户，有可能因为并发减小后拆红包成功，这会带来用户体验上的负面影响。</li>
+<li>如果采用乐观锁的方式，会带来大数量的无效更新请求、事务回滚，给DB造成不必要的额外压力。</li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<h3 id="微信红包系统的高并发解决方案"><a href="#微信红包系统的高并发解决方案" class="headerlink" title="微信红包系统的高并发解决方案"></a>微信红包系统的高并发解决方案</h3><ul>
+<li>系统垂直SET化，分而治之。</li>
+<li>逻辑Server层将请求排队，解决DB并发问题。<ul>
+<li>将同一个红包ID的所有请求stick到同一台Server。</li>
+<li>设计单机请求排队方案。</li>
+<li>增加memcached控制并发。</li>
+</ul>
+</li>
+<li>双维度库表设计，保障系统性能稳定<ul>
+<li>初期是根据红包ID的hash值分为多库多表。</li>
+<li>采用冷热分离，将历史冷数据与当前热数据分开存储，可以解决这个问题。</li>
+</ul>
+</li>
+</ul>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p>coolshell的解析<a href="http://coolshell.cn/articles/10910.html" target="_blank" rel="external">http://coolshell.cn/articles/10910.html</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>一台(单点)服务器提供数据服务时，会遇到的问题</strong></p>
+<ul>
+<li>一台服务器的性能不足以提供足够的能力服务所有请求</li>
+<li>如果这台服务器宕机，将会造成服务不可用甚至丢失数据</li>
+</ul>
+<p><strong>解决单点问题，引入更多服务器，两种手段来扩展数据服务</strong></p>
+<ul>
+<li>数据分区</li>
+<li>数据镜像</li>
+</ul>
+<p><strong>以上方案中需要考虑的问题总结为</strong></p>
+<ul>
+<li>容灾：数据不丢</li>
+<li>数据一致性：事务处理</li>
+<li>性能</li>
+</ul>
+<h4 id="2pc，又称两阶段提交"><a href="#2pc，又称两阶段提交" class="headerlink" title="2pc，又称两阶段提交"></a>2pc，又称两阶段提交</h4><p>引入协调者、参与者来保证ACID，分为两个阶段如下：</p>
+<p><strong>第一阶段</strong></p>
+<ol>
+<li>协调者询问所有参与者，是否可以执行提交操作</li>
+<li>参与者开始事务执行的准备工作，预留资源、锁定资源、写redo\undolog</li>
+<li>响应协调者是否可以提交</li>
+</ol>
+<p><strong>第二阶段</strong></p>
+<ol>
+<li>如果所有参与者都回应可以提交。那么，协调者向所有参与者发送“正式提交”的命令。参与者完成提交工作，响应完成</li>
+<li>如果有一个参与者拒绝提交，则协调者向所有参与者发送回滚消息</li>
+</ol>
+<p><strong>2pc存在的最大问题</strong></p>
+<p>如果一阶段完成，参与者第二阶段没有收到决策，那么数据节点会进入“不知所措”的状态，这个状态会block整个事务。</p>
+<h4 id="3pc，又称三阶段提交，2pc的升级版"><a href="#3pc，又称三阶段提交，2pc的升级版" class="headerlink" title="3pc，又称三阶段提交，2pc的升级版"></a>3pc，又称三阶段提交，2pc的升级版</h4><p>3pc与2pc的主要区别在于：在第一阶段询问是否可以提交的时候，不锁定资源。除非所有参与者都回应可以提交，才开始在第二阶段锁定资源</p>
+<h3 id="PAXOS"><a href="#PAXOS" class="headerlink" title="PAXOS"></a>PAXOS</h3><blockquote>
+<p><a href="https://www.zhihu.com/question/19787937" target="_blank" rel="external">https://www.zhihu.com/question/19787937</a></p>
+<p>作者博客<a href="http://lamport.azurewebsites.net/pubs/pubs.html#lamport-paxos" target="_blank" rel="external">http://lamport.azurewebsites.net/pubs/pubs.html#lamport-paxos</a></p>
+<p>coolshell的解析<a href="http://coolshell.cn/articles/10910.html" target="_blank" rel="external">http://coolshell.cn/articles/10910.html</a></p>
+</blockquote>
+<p><strong>基本概念</strong></p>
+<p>PAXOS 算法，集群中任何一个节点都可以发起数据修改的提案，最终提案是否通过取决于集群中是否有过半数的节点同意。</p>
+<p>他是一个民主选举算法，过半数节点的决定会成为整个集群的统一决定。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="微信序列号生成器架构设计及演变"><a href="#微信序列号生成器架构设计及演变" class="headerlink" title="微信序列号生成器架构设计及演变"></a>微信序列号生成器架构设计及演变</h3><blockquote>
+<p> <a href="http://www.infoq.com/cn/articles/wechat-serial-number-generator-architecture" target="_blank" rel="external">http://www.infoq.com/cn/articles/wechat-serial-number-generator-architecture</a></p>
+</blockquote>
+<h4 id="配置开发机以让外网访问"><a href="#配置开发机以让外网访问" class="headerlink" title="配置开发机以让外网访问"></a>配置开发机以让外网访问</h4><h4 id="你有哪些得意之作"><a href="#你有哪些得意之作" class="headerlink" title="你有哪些得意之作"></a>你有哪些得意之作</h4><h4 id="如何做测试"><a href="#如何做测试" class="headerlink" title="如何做测试"></a>如何做测试</h4><h4 id="接触到的Mysql数据库表最大是多少行记录"><a href="#接触到的Mysql数据库表最大是多少行记录" class="headerlink" title="接触到的Mysql数据库表最大是多少行记录?"></a>接触到的Mysql数据库表最大是多少行记录?</h4><h4 id="出现性能瓶颈怎么解决？"><a href="#出现性能瓶颈怎么解决？" class="headerlink" title="出现性能瓶颈怎么解决？"></a>出现性能瓶颈怎么解决？</h4><h4 id="学习一个新框架如何入手"><a href="#学习一个新框架如何入手" class="headerlink" title="学习一个新框架如何入手?"></a>学习一个新框架如何入手?</h4><h2 id="人力问题"><a href="#人力问题" class="headerlink" title="人力问题"></a>人力问题</h2><h4 id="你最大的缺点是什么"><a href="#你最大的缺点是什么" class="headerlink" title="你最大的缺点是什么"></a>你最大的缺点是什么</h4><p>面试官通常考察影应聘者的因素，从深往浅主要有：三观，性格特点，思维方式，技能，知识。</p>
+<p>想象一个冰山模型，最下面的是三观，往上是性格特点，思维方式，这三个都在水面下，是先天遗传和后天环境交互影响的结果。水面上的是技能和知识，主要依赖后天的学习和训练来养成。发现没有，水面下的三个因素，因为涉及遗传这个不可抗力，会更稳定，也就是缺少了可塑性。这些地方出了问题，可以改，但是难度系数大，收益效率低。水面上的两点，可塑性大。如果这个地方出了问题，改起来容易。请自动类比一台CPU坏了的电脑和一台F键坏了的电脑，哪台让你更揪心？</p>
+<p><strong><em>手动加粗</em></strong></p>
+<blockquote>
+<p>在谈到自己缺点的时候，尽量避开三观，性格方面的缺点。思维方式作为可选项，但不是优选项。最好还是着眼于知识和技能。因为这两点改进空间大，速度快。</p>
+</blockquote>
+<p><strong>手动加粗2</strong></p>
+<p>往高处说，往远处说</p>
+<ol>
+<li><p><strong>往高处说：能力层次有高有低，请你挑一个与你目前所在层次相隔较远的能力缺陷来说。</strong></p>
+</li>
+<li><p><strong>术业有专攻，找一个与你本职工作间隔较远的专业能力缺陷来说。</strong></p>
+<p>​</p>
+</li>
+</ol>
+<h2 id="目标公司"><a href="#目标公司" class="headerlink" title="目标公司"></a>目标公司</h2><ul>
+<li>美团    望京</li>
+<li>链家网</li>
+</ul>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+
+
+
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Indice
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Panoramica
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categorie</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存架构"><span class="nav-number">1.</span> <span class="nav-text">缓存架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概论"><span class="nav-number">1.1.</span> <span class="nav-text">概论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mongodb"><span class="nav-number">1.2.</span> <span class="nav-text">Mongodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL"><span class="nav-number">1.3.</span> <span class="nav-text">MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#索引"><span class="nav-number">1.3.1.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#性能优化"><span class="nav-number">1.3.2.</span> <span class="nav-text">性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#慢查询"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">慢查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#缓冲区和缓存"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">缓冲区和缓存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#显示排序统计信息"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">显示排序统计信息</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MVCC"><span class="nav-number">1.3.3.</span> <span class="nav-text">MVCC</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#mysql三个隐藏的key"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">mysql三个隐藏的key</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排它锁和共享锁"><span class="nav-number">1.3.4.</span> <span class="nav-text">排它锁和共享锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事务"><span class="nav-number">1.3.5.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ACID"><span class="nav-number">1.3.6.</span> <span class="nav-text">ACID</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隔离级别"><span class="nav-number">1.3.7.</span> <span class="nav-text">隔离级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.3.8.</span> <span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MyISAM与InnoDB索引的区别"><span class="nav-number">1.3.9.</span> <span class="nav-text">MyISAM与InnoDB索引的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB的Primary-Index-和-secondary-Index有何区别？"><span class="nav-number">1.3.10.</span> <span class="nav-text">InnoDB的Primary Index 和 secondary Index有何区别？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#int-4-vs-int-11"><span class="nav-number">1.3.11.</span> <span class="nav-text">int(4) vs int(11)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#varchar-vs-char"><span class="nav-number">1.3.12.</span> <span class="nav-text">varchar vs char</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DELETE-TRUNCATE"><span class="nav-number">1.3.13.</span> <span class="nav-text">DELETE TRUNCATE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#float-double"><span class="nav-number">1.3.14.</span> <span class="nav-text">float double</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#varchar-n-可以存储几个中文"><span class="nav-number">1.3.15.</span> <span class="nav-text">varchar(n) 可以存储几个中文</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis"><span class="nav-number">1.4.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#复制"><span class="nav-number">1.4.1.</span> <span class="nav-text">复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据一致性"><span class="nav-number">1.4.2.</span> <span class="nav-text">数据一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据持久化"><span class="nav-number">1.4.3.</span> <span class="nav-text">数据持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB快照"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">RDB快照</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF日志"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">AOF日志</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">1.4.4.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置"><span class="nav-number">1.4.5.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#rdb"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">rdb</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#slow-log"><span class="nav-number">1.4.5.2.</span> <span class="nav-text">slow log</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高级配置"><span class="nav-number">1.4.6.</span> <span class="nav-text">高级配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#hash"><span class="nav-number">1.4.6.1.</span> <span class="nav-text">hash</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#list"><span class="nav-number">1.4.6.2.</span> <span class="nav-text">list</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#set"><span class="nav-number">1.4.6.3.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#include"><span class="nav-number">1.4.6.4.</span> <span class="nav-text">include</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#codis"><span class="nav-number">1.5.</span> <span class="nav-text">codis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memcache"><span class="nav-number">1.6.</span> <span class="nav-text">memcache</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cas"><span class="nav-number">1.6.1.</span> <span class="nav-text">cas</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole"><span class="nav-number">2.</span> <span class="nav-text">swoole</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异步mysql"><span class="nav-number">2.1.</span> <span class="nav-text">异步mysql</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zookeeper"><span class="nav-number">3.</span> <span class="nav-text">zookeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署架构图"><span class="nav-number">3.1.</span> <span class="nav-text">部署架构图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce"><span class="nav-number">4.</span> <span class="nav-text">MapReduce</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息队列"><span class="nav-number">5.</span> <span class="nav-text">消息队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka"><span class="nav-number">5.1.</span> <span class="nav-text">Kafka</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设计目标"><span class="nav-number">5.1.1.</span> <span class="nav-text">设计目标</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LVS"><span class="nav-number">6.</span> <span class="nav-text">LVS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全"><span class="nav-number">7.</span> <span class="nav-text">安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sql注入"><span class="nav-number">7.1.</span> <span class="nav-text">sql注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xss"><span class="nav-number">7.2.</span> <span class="nav-text">xss</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPC调用"><span class="nav-number">8.</span> <span class="nav-text">RPC调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#thrift"><span class="nav-number">8.1.</span> <span class="nav-text">thrift</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加密算法"><span class="nav-number">9.</span> <span class="nav-text">加密算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-number">9.1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DES加密算法"><span class="nav-number">9.1.1.</span> <span class="nav-text">DES加密算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AES加密算法"><span class="nav-number">9.1.2.</span> <span class="nav-text">AES加密算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RSA加密算法"><span class="nav-number">9.1.3.</span> <span class="nav-text">RSA加密算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#base64加密算法"><span class="nav-number">9.1.4.</span> <span class="nav-text">base64加密算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MD5加密算法"><span class="nav-number">9.1.5.</span> <span class="nav-text">MD5加密算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SHA1加密算法"><span class="nav-number">9.1.6.</span> <span class="nav-text">SHA1加密算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符编码-amp-字符集"><span class="nav-number">10.</span> <span class="nav-text">字符编码&字符集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符集"><span class="nav-number">10.1.</span> <span class="nav-text">字符集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符编码"><span class="nav-number">10.2.</span> <span class="nav-text">字符编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF-8和Unicode的关系"><span class="nav-number">10.3.</span> <span class="nav-text">UTF-8和Unicode的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF-8编码简介"><span class="nav-number">10.4.</span> <span class="nav-text">UTF-8编码简介</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作内容"><span class="nav-number">11.</span> <span class="nav-text">工作内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#任务发布"><span class="nav-number">11.1.</span> <span class="nav-text">任务发布</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微信红包"><span class="nav-number">12.</span> <span class="nav-text">微信红包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#微信红包两大业务特点"><span class="nav-number">12.1.</span> <span class="nav-text">微信红包两大业务特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#微信红包技术难点"><span class="nav-number">12.2.</span> <span class="nav-text">微信红包技术难点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决高并发问题通常使用的方案"><span class="nav-number">12.3.</span> <span class="nav-text">解决高并发问题通常使用的方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#微信红包系统的高并发解决方案"><span class="nav-number">12.4.</span> <span class="nav-text">微信红包系统的高并发解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务"><span class="nav-number">13.</span> <span class="nav-text">分布式事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">14.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2pc，又称两阶段提交"><span class="nav-number">14.0.1.</span> <span class="nav-text">2pc，又称两阶段提交</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3pc，又称三阶段提交，2pc的升级版"><span class="nav-number">14.0.2.</span> <span class="nav-text">3pc，又称三阶段提交，2pc的升级版</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PAXOS"><span class="nav-number">14.1.</span> <span class="nav-text">PAXOS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">15.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#微信序列号生成器架构设计及演变"><span class="nav-number">15.1.</span> <span class="nav-text">微信序列号生成器架构设计及演变</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置开发机以让外网访问"><span class="nav-number">15.1.1.</span> <span class="nav-text">配置开发机以让外网访问</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#你有哪些得意之作"><span class="nav-number">15.1.2.</span> <span class="nav-text">你有哪些得意之作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何做测试"><span class="nav-number">15.1.3.</span> <span class="nav-text">如何做测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接触到的Mysql数据库表最大是多少行记录"><span class="nav-number">15.1.4.</span> <span class="nav-text">接触到的Mysql数据库表最大是多少行记录?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#出现性能瓶颈怎么解决？"><span class="nav-number">15.1.5.</span> <span class="nav-text">出现性能瓶颈怎么解决？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#学习一个新框架如何入手"><span class="nav-number">15.1.6.</span> <span class="nav-text">学习一个新框架如何入手?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#人力问题"><span class="nav-number">16.</span> <span class="nav-text">人力问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#你最大的缺点是什么"><span class="nav-number">16.0.1.</span> <span class="nav-text">你最大的缺点是什么</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目标公司"><span class="nav-number">17.</span> <span class="nav-text">目标公司</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Tema &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

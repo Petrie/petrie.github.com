@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="引用变量字符串 heredoc newdoc  empty vs isset vs is_null1https://www.virendrachandak.com/techtalk/php-isset-vs-empty-vs-is_null/ 常量 PHP 5.3.0 起，有两种方式定义常量，使用 const 关键字或者 define() 函数   Switch case类型只能是 整形、浮点类型">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Petrie's Home">
+<meta property="og:url" content="http://petrie.github.com/it/PHP.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="引用变量字符串 heredoc newdoc  empty vs isset vs is_null1https://www.virendrachandak.com/techtalk/php-isset-vs-empty-vs-is_null/ 常量 PHP 5.3.0 起，有两种方式定义常量，使用 const 关键字或者 define() 函数   Switch case类型只能是 整形、浮点类型">
+<meta property="og:updated_time" content="2018-07-19T13:54:28.913Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petrie's Home">
+<meta name="twitter:description" content="引用变量字符串 heredoc newdoc  empty vs isset vs is_null1https://www.virendrachandak.com/techtalk/php-isset-vs-empty-vs-is_null/ 常量 PHP 5.3.0 起，有两种方式定义常量，使用 const 关键字或者 define() 函数   Switch case类型只能是 整形、浮点类型">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/PHP.html"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '[object Object]');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="it">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-notes">
+    <a href="/it/summary2.html" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />notes</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categorie</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archivi</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline"></h1>
+
+<div class="post-meta">
+  
+  
+
+
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h4 id="引用变量"><a href="#引用变量" class="headerlink" title="引用变量"></a>引用变量</h4><h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><ul>
+<li>heredoc</li>
+<li>newdoc</li>
+</ul>
+<h4 id="empty-vs-isset-vs-is-null"><a href="#empty-vs-isset-vs-is-null" class="headerlink" title="empty vs isset vs is_null"></a>empty vs isset vs is_null</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://www.virendrachandak.com/techtalk/php-isset-vs-empty-vs-is_null/</div></pre></td></tr></table></figure>
+<h4 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h4><ul>
+<li>PHP 5.3.0 起，有两种方式定义常量，使用 const 关键字或者 define() 函数 </li>
+</ul>
+<h4 id="Switch"><a href="#Switch" class="headerlink" title="Switch"></a>Switch</h4><ul>
+<li>case类型只能是 整形、浮点类型、字符串</li>
+</ul>
+<h4 id="扩展开发"><a href="#扩展开发" class="headerlink" title="扩展开发"></a>扩展开发</h4><blockquote>
+<p><a href="http://www.imsiren.com/archives/196" target="_blank" rel="external">http://www.imsiren.com/archives/196</a></p>
+<p><a href="http://www.cunmou.com/phpbook/preface.md" target="_blank" rel="external">http://www.cunmou.com/phpbook/preface.md</a></p>
+<p><a href="https://devzone.zend.com/1435/wrapping-c-classes-in-a-php-extension/" target="_blank" rel="external">https://devzone.zend.com/1435/wrapping-c-classes-in-a-php-extension/</a></p>
+<p><a href="http://0x1.im/blog/php/how-to-create-a-php-extension.html" target="_blank" rel="external">http://0x1.im/blog/php/how-to-create-a-php-extension.html</a></p>
+<p><a href="https://docstore.mik.ua/orelly/webprog/php/ch14_08.htm" target="_blank" rel="external">https://docstore.mik.ua/orelly/webprog/php/ch14_08.htm</a></p>
+</blockquote>
+<h4 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h4><blockquote>
+<p>《GO语言编程》</p>
+<p><a href="http://www.laruence.com/2015/05/28/3038.html" target="_blank" rel="external">http://www.laruence.com/2015/05/28/3038.html</a></p>
+</blockquote>
+<p>协程的支持是在迭代生成器的基础上, 增加了可以回送数据给生成器的功能(调用者发送数据给被调用的生成器函数). 这就把生成器到调用者的单向通信转变为两者之间的双向通信.</p>
+<p>协作多任务在Windows的早期版本(windows95)和Mac OS中有使用, 不过它们后来都切换到使用抢先多任务了. 理由相当明确：如果你依靠程序自动交出控制的话, 那么一些恶意的程序将很容易占用整个CPU, 不与其他任务共享.</p>
+<h5 id="协程任务调度"><a href="#协程任务调度" class="headerlink" title="协程任务调度"></a>协程任务调度</h5><h5 id="协程堆栈"><a href="#协程堆栈" class="headerlink" title="协程堆栈"></a>协程堆栈</h5><h5 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h5><h4 id="同步阻塞-IO、同步非阻塞-IO、多路复用IO-、-异步-IO"><a href="#同步阻塞-IO、同步非阻塞-IO、多路复用IO-、-异步-IO" class="headerlink" title="同步阻塞 IO、同步非阻塞 IO、多路复用IO 、 异步 IO"></a>同步阻塞 IO、同步非阻塞 IO、多路复用IO 、 异步 IO</h4><blockquote>
+<p><a href="http://blog.csdn.net/HQ354974212/article/details/76155906" target="_blank" rel="external">http://blog.csdn.net/HQ354974212/article/details/76155906</a></p>
+</blockquote>
+<ul>
+<li>同步（synchronous）和异步（asynchronous）的概念描述的是用户线程与内核的交互方式：同步是指用户线程发起 IO 请求后需要等待或者轮询内核 IO 操作完成后才能继续执行；而异步是指用户线程发起 IO 请求后仍继续执行，当内核 IO 操作完成后会通知用户线程，或者调用用户线程注册的回调函数。</li>
+<li>阻塞（blocking）和非阻塞（non-blocking）的概念描述的是用户线程调用内核 IO 的操作方式：阻塞是指 IO 操作需要彻底完成后才返回到用户空间；而非阻塞是指 IO 操作被调用后立即返回给用户一个状态值，无需等到 IO 操作彻底完成。</li>
+<li>各种IO特点<ul>
+<li>同步阻塞IO：调用recv函数时，系统首先查是否有准备好的数据。如果数据没有准备好，那么系统就处于等待状态。应对多客户机的网络应用，通过多进程、多线程解决。fork／pthread_create</li>
+<li>非阻塞IO：把一个socket接口设置为非阻塞，就是告诉内核当I/O操作无法完成时，不要进入睡眠，而是返回一个错误</li>
+<li>IO复用模型：同时对多个I/O端口进行侦听。</li>
+</ul>
+</li>
+<li>各种IO特点和优缺点<ul>
+<li>阻塞blocking IO 的特点就是在 IO 执行的两个阶段（等待数据和拷贝数据两个阶段）都被 block 了。</li>
+<li>在非阻塞式 IO 中，用户进程其实是需要不断的主动询问 kernel 数据准备好了没有。</li>
+</ul>
+</li>
+</ul>
+<p>由于 select 函数是阻塞的，因此多路 IO 复用模型也被称为异步阻塞 IO 模型。</p>
+<h4 id="php常用扩展"><a href="#php常用扩展" class="headerlink" title="php常用扩展"></a>php常用扩展</h4><ul>
+<li>xhprof  PHP性能分析工具</li>
+<li>xdebug  PHP调试工具</li>
+</ul>
+<h4 id="php生命周期"><a href="#php生命周期" class="headerlink" title="php生命周期"></a>php生命周期</h4><blockquote>
+<p><a href="http://www.php-internals.com/" target="_blank" rel="external">http://www.php-internals.com/</a></p>
+</blockquote>
+<h5 id="两个阶段"><a href="#两个阶段" class="headerlink" title="两个阶段"></a>两个阶段</h5><ol>
+<li>处理请求之前的开始阶段<ol>
+<li>模块初始化阶段 MINIT</li>
+<li>模块激活阶段 RINIT</li>
+</ol>
+</li>
+<li>请求之后的结束阶段<ol>
+<li>停用模块RSHUTDOWN</li>
+<li>关闭模块MSHUTDOWN</li>
+</ol>
+</li>
+</ol>
+<p>CLI/CGI模式的PHP属于单进程的SAPI模式。这类的请求在处理一次请求后就关闭。也就是只会经过如下几个环节： 开始 - 请求开始 - 请求关闭 - 结束 SAPI接口实现就完成了其生命周期。</p>
+<h4 id="php配置文件"><a href="#php配置文件" class="headerlink" title="php配置文件"></a>php配置文件</h4><h5 id="php-ini"><a href="#php-ini" class="headerlink" title="php.ini"></a>php.ini</h5><ul>
+<li>short_open_tag</li>
+<li>asp_tags</li>
+<li>precision</li>
+<li>disable_functions</li>
+<li>disable_classes</li>
+<li>memory_limit</li>
+<li>realpath_cache_size</li>
+<li>realpath_cache_ttl</li>
+<li>post_max_size</li>
+<li>default_mimetype</li>
+<li>default_charset</li>
+<li>extension_dir</li>
+<li>extension</li>
+<li>zend_extension</li>
+</ul>
+<h5 id="php-fpm-conf"><a href="#php-fpm-conf" class="headerlink" title="php-fpm.conf"></a>php-fpm.conf</h5><blockquote>
+<p><a href="http://php.net/manual/zh/install.fpm.configuration.php" target="_blank" rel="external">http://php.net/manual/zh/install.fpm.configuration.php</a></p>
+<p><a href="https://myjeeva.com/php-fpm-configuration-101.html" target="_blank" rel="external">https://myjeeva.com/php-fpm-configuration-101.html</a></p>
+</blockquote>
+<ul>
+<li>process_control_timeout</li>
+<li>events.mechanism = epoll</li>
+<li>pm.max_requests = 10000</li>
+<li>request_slowlog_timeout = 5s</li>
+<li>slowlog = /var/log/$pool.log.slow</li>
+<li>request_terminate_timeout</li>
+</ul>
+<blockquote>
+<p><a href="https://laravel-china.github.io/php-the-right-way/" target="_blank" rel="external">https://laravel-china.github.io/php-the-right-way/</a></p>
+</blockquote>
+<h4 id="字符串处理函数"><a href="#字符串处理函数" class="headerlink" title="字符串处理函数"></a>字符串处理函数</h4><blockquote>
+<p><a href="http://php.net/manual/zh/ref.strings.php" target="_blank" rel="external">http://php.net/manual/zh/ref.strings.php</a></p>
+</blockquote>
+<h4 id="数组处理函数"><a href="#数组处理函数" class="headerlink" title="数组处理函数"></a>数组处理函数</h4><blockquote>
+<p><a href="http://php.net/manual/zh/function.array.php" target="_blank" rel="external">http://php.net/manual/zh/function.array.php</a></p>
+</blockquote>
+<ul>
+<li>array_shift 将数组开头数组移出</li>
+<li>array_unshift 在数组开头插入一个或个多个单元</li>
+<li>array_change_key_case 将所有key大小写转换</li>
+<li>array_chunk 将数组分片</li>
+<li>array_column 取出二维数组指定列</li>
+<li>array_combine 创建一个数组，用一个数字的键作为其键名，另一个数组的值作为其值</li>
+<li>array_count_values 统计数组中所有的值</li>
+<li>array_diff_assoc 所有在array1但不在其他所有数组的元素，带索引取差集</li>
+<li>array_diff_key 所有在array2但不在其他所有数组的元素，带key取差集</li>
+<li>array_diff_uassoc 回调函数比较异同</li>
+<li>array_diff_ukey 回调函数比较异同</li>
+<li>end 将 <code>array</code> 的内部指针移动到最后一个单元并返回其值。</li>
+</ul>
+<h4 id="error-reporting"><a href="#error-reporting" class="headerlink" title="error_reporting()"></a>error_reporting()</h4><ul>
+<li>E_NOTICE 通知信息会对代码中可能出现的bug给出警告，例如，<em>$arr[item]</em> 最好写成 <em>$arr[‘item’]</em> ，因为 PHP 会试图将 <em>“item”</em> 当成一个常量。如果它不是一个常量，PHP才会把它当做数组的字符串索引。</li>
+<li>E_STRICT 在开发阶段启用 <strong>E_STRICT</strong> 会有一些好处。严格的信息将帮助你使用最新和最好的建议的方法来编写代码，例如它会警告你使用了将被废弃的函数。</li>
+<li>todo 更加详细的功能描述</li>
+</ul>
+<blockquote>
+<p><a href="http://php.net/manual/zh/errorfunc.configuration.php#ini.error-reporting" target="_blank" rel="external">http://php.net/manual/zh/errorfunc.configuration.php#ini.error-reporting</a></p>
+</blockquote>
+<h4 id="编码规范psr"><a href="#编码规范psr" class="headerlink" title="编码规范psr"></a>编码规范psr</h4><ul>
+<li>PSR-1：基础代码风格</li>
+<li>PSR-2：严格代码风格</li>
+<li>PSR-3：日志记录器接口</li>
+<li>PSR-4：自动加载</li>
+</ul>
+<h4 id="文件读写"><a href="#文件读写" class="headerlink" title="文件读写"></a>文件读写</h4><h4 id="preg-match"><a href="#preg-match" class="headerlink" title="preg_match"></a>preg_match</h4><h4 id="pdo"><a href="#pdo" class="headerlink" title="pdo"></a>pdo</h4><blockquote>
+<p><a href="http://wiki.hashphp.org/PDO_Tutorial_for_MySQL_Developers" target="_blank" rel="external">http://wiki.hashphp.org/PDO_Tutorial_for_MySQL_Developers</a></p>
+</blockquote>
+<ul>
+<li><p>创建连接</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span> </div><div class="line">$db = <span class="keyword">new</span> PDO(<span class="string">'mysql:host=localhost;dbname=testdb;charset=utf8'</span>,<span class="string">'username'</span>,<span class="string">'password'</span>);</div></pre></td></tr></table></figure>
+</li>
+<li><p>setAttribute</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$db = <span class="keyword">new</span> PDO(<span class="string">'mysql:host=localhost;dbname=testdb;charset=utf8mb4'</span>, <span class="string">'username'</span>, <span class="string">'password'</span>);</div><div class="line">$db-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);</div><div class="line">$db-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES, <span class="keyword">false</span>);</div></pre></td></tr></table></figure>
+</li>
+<li><p>Error Handing</p>
+<p>PDO has three handling modes.</p>
+<ol>
+<li>PDO::ERRMODE<em>SILENT acts like mysql</em>* where you must check each result and then look at $db-&gt;errorInfo(); to get the error details</li>
+<li>PDO::_ERRMODE_WARNING_ throws php Warning</li>
+<li>PDO::ERRMODE_EXCEPTION throws PDOEXception. In my opinion this is the mode you should use.it acts very much like <code>or die(mysql_error())</code> when it is;t caught.</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">($db)</span></span>&#123;</div><div class="line">  $stmt = $db-&gt;query(<span class="string">'SELECT * FROM table'</span>);</div><div class="line">  <span class="keyword">return</span> $stmt-&gt;fetchAll(PDO::FETCH_ASSOC);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">  getData($db);</div><div class="line">&#125;<span class="keyword">catch</span>(PDOException $ex)&#123;</div><div class="line">  <span class="comment">//handle me</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Running Simple Select Statements</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="keyword">foreach</span>($db-&gt;query(<span class="string">'SELECT * FROM table'</span>) <span class="keyword">as</span> $row)&#123;</div><div class="line">  <span class="keyword">echo</span> $row[<span class="string">'field'</span>].<span class="string">' '</span>.$row[<span class="string">'field'</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$stmt  = $db-&gt;query(<span class="string">'SELECT * FROM table'</span>);</div><div class="line"><span class="keyword">while</span>($row = $stmt-&gt;fecth(PDO::FETCH_ASSOC))&#123;</div><div class="line">  <span class="keyword">echo</span> $row[<span class="string">'field'</span>].<span class="string">' '</span>.$row[<span class="string">'field2'</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$stmt = $db-&gt;query(<span class="string">'SELECT * FROM table'</span>);</div><div class="line">$results = $stmt-&gt;fecthALL(PDO::FETCH_ASSOC);</div></pre></td></tr></table></figure>
+</li>
+<li><p>Getting Row Count</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$stmt = $db-&gt;query(<span class="string">'SELECT * FROM table'</span>);</div><div class="line">$row_count = $stmt-&gt;rowCount();</div></pre></td></tr></table></figure>
+</li>
+<li><p>Getting the last Insert Id</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"> $result = $db-&gt;exec(<span class="string">"INSERT INTO table(firstname, lastname) values('John','Doe')"</span>);</div><div class="line">$insertId = $db-&gt;lastInsertId();</div></pre></td></tr></table></figure>
+</li>
+<li><p>Running Simple INSERT,UPDATA, or DELETA statements</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span> </div><div class="line"> $affected_rows = $db-&gt;exec(<span class="string">"UPDATE table set field = 'value'"</span>);</div></pre></td></tr></table></figure>
+</li>
+<li><p>Running Statements With Parameters</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$stmt = $db-&gt;prepare(<span class="string">"SELECT * FROM table WHERE id=? AND name=?"</span>);</div><div class="line">$stmt-&gt;execute(<span class="keyword">array</span>($id,$name));</div><div class="line">$rows = $stmt-&gt;fetchAll(PDO::FECTH_ASSOC);</div></pre></td></tr></table></figure>
+</li>
+<li><p>bindValue</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$stmt = $db-&gt;prepare(<span class="string">"SELECT * FROM table where id=? and name=?"</span>);</div><div class="line">$stmt-&gt;bindValue(<span class="number">1</span>,$id,PDO::PARAM_INT)</div><div class="line">$stmt-&gt;bindValue(<span class="number">2</span>,$name,PDO::PARAM_STR)</div><div class="line">$stmt-&gt;execute();</div><div class="line">$rows = $stmt-&gt;fecthAll(PDO::FETCH_ASSOC)</div></pre></td></tr></table></figure>
+</li>
+<li><p>named Placeholders</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">  $stmt = $db-&gt;prepare(<span class="string">"SELECT * FROM table WHERE id=:id AND name=:name"</span>);</div><div class="line">  $stmt-&gt;bindValue(<span class="string">':id'</span>,$id,PDO::PARAM_INT);</div><div class="line">  $stmt-&gt;bindValue(<span class="string">':name'</span>,$name,PDO::PARAM_STR);</div><div class="line">  $stmt-&gt;execute();</div><div class="line">  $rows = $stmt-&gt;fecthAll(PDO::FETCH_ASSOC);</div></pre></td></tr></table></figure>
+</li>
+<li><p>INSERT,DELETE UPDATE Prepared Queries</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">  <span class="comment">#insert</span></div><div class="line">$stmt = $db-&gt;prepare(<span class="string">"INSERT INTO table(field1,field2,field3,field4,field5) VALUES(:field1,:field2,:field3,:field4,:field5)"</span>);</div><div class="line">$stmt-&gt;execute(<span class="keyword">array</span>(<span class="string">':field1'</span> =&gt; $field1, <span class="string">':field2'</span> =&gt; $field2, <span class="string">':field3'</span> =&gt; $field3, <span class="string">':field4'</span> =&gt; $field4, <span class="string">':field5'</span> =&gt; $field5));</div><div class="line">$affected_rows = $stmt-&gt;rowCount();</div><div class="line"><span class="comment">#delete</span></div><div class="line">$stmt = $db-&gt;prepare(<span class="string">"DELETE FROM table WHERE id=:id"</span>);</div><div class="line">$stmt-&gt;bindValue(<span class="string">':id'</span>, $id, PDO::PARAM_STR);</div><div class="line">$stmt-&gt;execute();</div><div class="line">$affected_rows = $stmt-&gt;rowCount();</div><div class="line"><span class="comment">#update</span></div><div class="line">$stmt = $db-&gt;prepare(<span class="string">"UPDATE table SET name=? WHERE id=?"</span>);</div><div class="line">$stmt-&gt;execute(<span class="keyword">array</span>($name, $id));</div><div class="line">$affected_rows = $stmt-&gt;rowCount();</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="mysqli"><a href="#mysqli" class="headerlink" title="mysqli"></a>mysqli</h4><ul>
+<li><p>面向对象链接数据库</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$mysqli = <span class="keyword">new</span> mysqli(<span class="string">'localhost'</span>, <span class="string">'my_user'</span>, <span class="string">'my_password'</span>, <span class="string">'my_db'</span>);</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line">* This is the "official" OO way to do it,</div><div class="line">* BUT $connect_error was broken until PHP 5.2.9 and 5.3.0.</div><div class="line">*/</div><div class="line"><span class="keyword">if</span> ($mysqli-&gt;connect_error) &#123;</div><div class="line">   <span class="keyword">die</span>(<span class="string">'Connect Error ('</span> . $mysqli-&gt;connect_errno . <span class="string">') '</span></div><div class="line">           . $mysqli-&gt;connect_error);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>/*</p>
+</li>
+<li><p>Use this instead of $connect_error if you need to ensure</p>
+</li>
+<li><p>compatibility with PHP versions prior to 5.2.9 and 5.3.0.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"> */</div><div class="line">if (mysqli_connect_error()) &#123;</div><div class="line">    die(&apos;Connect Error (&apos; . mysqli_connect_errno() . &apos;) &apos;</div><div class="line">            . mysqli_connect_error());</div><div class="line">&#125;</div><div class="line"></div><div class="line">echo &apos;Success... &apos; . $mysqli-&gt;host_info . &quot;\n&quot;;</div><div class="line"></div><div class="line">$mysqli-&gt;close();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+</li>
+<li><p>面向过程链接数据库</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$link = mysqli_connect(<span class="string">'localhost'</span>, <span class="string">'my_user'</span>, <span class="string">'my_password'</span>, <span class="string">'my_db'</span>);</div><div class="line"></div><div class="line"><span class="keyword">if</span> (!$link) &#123;</div><div class="line">    <span class="keyword">die</span>(<span class="string">'Connect Error ('</span> . mysqli_connect_errno() . <span class="string">') '</span></div><div class="line">            . mysqli_connect_error());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">echo</span> <span class="string">'Success... '</span> . mysqli_get_host_info($link) . <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">mysqli_close($link);</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<h4 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h4><h5 id="curl-setopt"><a href="#curl-setopt" class="headerlink" title="curl_setopt()"></a>curl_setopt()</h5><p>CURLOPT_RETURNTRANSFER  Return the response as a string instead of outputting to the screen</p>
+<p>CURLOPT_CONNECTTIMEOUT Number of second to attempting to connect</p>
+<p>CURLOPT_TIMEOUT Number of seconds all cUrl to execute</p>
+<p>CURLOPT_USERAGENT Useragent to use for request</p>
+<p>CURLOPT_URL URL to send request to</p>
+<p>CURLOPT_POST send request as post</p>
+<p>CURLOPT_POSTFIELDS  Array of data to POST in request</p>
+<h5 id="GET-request"><a href="#GET-request" class="headerlink" title="GET request"></a>GET request</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$curl = curl_init();</div><div class="line">curl_setopt_array($curl, <span class="keyword">array</span>(</div><div class="line">    CURLOPT_RETURNTRANSFER =&gt; <span class="number">1</span>,</div><div class="line">    CURLOPT_URL =&gt; <span class="string">'http://google.com'</span>,</div><div class="line">     CURLOPT_USERAGENT =&gt; <span class="string">'xxxx'</span>,</div><div class="line">));</div><div class="line">$resp = curl_exec($curl);</div><div class="line">curl_close($curl);</div></pre></td></tr></table></figure>
+<h5 id="POST-request"><a href="#POST-request" class="headerlink" title="POST request"></a>POST request</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">$curl = curl_init();</div><div class="line">curl_setopt_array($curl, <span class="keyword">array</span>(</div><div class="line">    CURLOPT_RETURNTRANSFER =&gt; <span class="number">1</span>,</div><div class="line">      CURLOPT_URL =&gt; <span class="string">'http://google.com'</span>,</div><div class="line">    CURLOPT_USERAGENT =&gt; <span class="string">'xxx'</span>,</div><div class="line">    CURLOPT_POST=&gt; <span class="number">1</span>,</div><div class="line">     CURLOPT_POSTFIELD =&gt; <span class="keyword">array</span>(</div><div class="line">        item1 =&gt; <span class="string">'value'</span>,</div><div class="line">          item2 =&gt; <span class="string">'value2'</span>,</div><div class="line">    ),</div><div class="line">));</div><div class="line">$resp = curl_exec($curl);</div><div class="line">curl_close($curl);</div></pre></td></tr></table></figure>
+<ul>
+<li>curl_error()</li>
+<li>curl_errno()</li>
+</ul>
+<h4 id="curl-multi"><a href="#curl-multi" class="headerlink" title="curl_multi"></a>curl_multi</h4><h3 id="PHP框架"><a href="#PHP框架" class="headerlink" title="PHP框架"></a>PHP框架</h3><p>如何选择框架</p>
+<ul>
+<li>学习曲线</li>
+<li>可扩展性</li>
+<li>维护团队是否活跃</li>
+<li>LTS 支持</li>
+<li>社区是否活跃</li>
+</ul>
+<h4 id="Laravel-vs-Yii-vs-Symfony"><a href="#Laravel-vs-Yii-vs-Symfony" class="headerlink" title="Laravel vs Yii vs Symfony"></a>Laravel vs Yii vs Symfony</h4><ul>
+<li>模版引擎<ul>
+<li>Symfony 用Twig</li>
+<li>laravel 用 blade</li>
+<li>Yii没有默认的模版引擎</li>
+</ul>
+</li>
+<li>模块化<ul>
+<li>laravel 没有模块化的功能</li>
+<li>symfony和yii都有</li>
+</ul>
+</li>
+<li>性能</li>
+<li>db支持</li>
+<li>可扩展性<ul>
+<li>laravel是赢家</li>
+</ul>
+</li>
+</ul>
+<h5 id="laravel"><a href="#laravel" class="headerlink" title="laravel"></a>laravel</h5><p>laravel最佳实践</p>
+<p><a href="https://github.com/alexeymezenin/laravel-best-practices#business-logic-should-be-in-service-class" target="_blank" rel="external">https://github.com/alexeymezenin/laravel-best-practices#business-logic-should-be-in-service-class</a></p>
+<p><strong>laravel特点</strong></p>
+<ul>
+<li>引入大量成熟的开源库</li>
+<li><p>拥抱php:命名空间、接口、匿名方法</p>
+</li>
+<li><p>Eloquent 整合</p>
+</li>
+<li><p>artisan</p>
+</li>
+</ul>
+<h5 id="Symfony"><a href="#Symfony" class="headerlink" title="Symfony"></a>Symfony</h5><p><a href="https://www.chrisyue.com/translation-create-your-own-framework-on-top-of-the-symfony-components-index.html" target="_blank" rel="external">https://www.chrisyue.com/translation-create-your-own-framework-on-top-of-the-symfony-components-index.html</a></p>
+<h4 id="PHP-Composer"><a href="#PHP-Composer" class="headerlink" title="PHP Composer"></a>PHP Composer</h4><ul>
+<li><p>安装</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">curl -sS https:<span class="comment">//getcomposer.org/installer | php</span></div><div class="line">mv composer.phar /usr/local/bin/composer        </div><div class="line">composer -V</div></pre></td></tr></table></figure>
+</li>
+<li><p>创建一个<code>composer.json</code>文件，写入相应的包名和版本号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">&quot;require&quot;:     &#123;</div><div class="line">&quot;monolog/monolog&quot;: &quot;1.0.*&quot;</div><div class="line">            &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>执行 <code>composer install</code>，就进入自动安装，安装完成后会生成一个<code>composer.lock</code>文件，里面是特定的版本号名，需要这个文件和<code>composer.json</code>一起提交到版本管理里去。</p>
+</li>
+<li><p>自动加载</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">require</span> <span class="string">'vendor/autoload.php'</span>;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h4><h4 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h4><h5 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h5><p>php 单例模式禁用clone方法，通过私有化__clone函数</p>
+<p>php 单例模式禁用construct方法</p>
+<blockquote>
+<p><a href="http://design-patterns.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="external">http://design-patterns.readthedocs.io/zh_CN/latest/index.html</a></p>
+<p><a href="https://laravel-china.github.io/php-the-right-way/pages/Design-Patterns.html" target="_blank" rel="external">https://laravel-china.github.io/php-the-right-way/pages/Design-Patterns.html</a></p>
+</blockquote>
+<h4 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h4><blockquote>
+<p><a href="https://secure.php.net/manual/en/internals2.memory.php" target="_blank" rel="external">https://secure.php.net/manual/en/internals2.memory.php</a></p>
+<p><a href="http://g.oswego.edu/dl/html/malloc.html" target="_blank" rel="external">http://g.oswego.edu/dl/html/malloc.html</a></p>
+<p><a href="http://www.cnblogs.com/taek/p/4229869.html" target="_blank" rel="external">http://www.cnblogs.com/taek/p/4229869.html</a></p>
+<p><a href="https://www.liuyingji.me/archives/142/" target="_blank" rel="external">https://www.liuyingji.me/archives/142/</a></p>
+<p><a href="https://phpinternals.net/docs/php_printf" target="_blank" rel="external">https://phpinternals.net/docs/php_printf</a>​</p>
+</blockquote>
+<h3 id="php7"><a href="#php7" class="headerlink" title="php7"></a>php7</h3><h4 id="VM"><a href="#VM" class="headerlink" title="VM"></a>VM</h4><blockquote>
+<p><a href="http://nikic.github.io/2017/04/14/PHP-7-Virtual-machine.html" target="_blank" rel="external">http://nikic.github.io/2017/04/14/PHP-7-Virtual-machine.html</a></p>
+<p><a href="https://gywbd.github.io/posts/2016/2/zend-execution-engine.html" target="_blank" rel="external">https://gywbd.github.io/posts/2016/2/zend-execution-engine.html</a></p>
+<p><a href="http://jpauli.github.io/2015/02/05/zend-vm-executor.html" target="_blank" rel="external">http://jpauli.github.io/2015/02/05/zend-vm-executor.html</a></p>
+<p><a href="http://www.laruence.com/2008/08/11/147.html" target="_blank" rel="external">http://www.laruence.com/2008/08/11/147.html</a></p>
+</blockquote>
+<h4 id="AST-抽象语法树"><a href="#AST-抽象语法树" class="headerlink" title="AST(抽象语法树)"></a>AST(抽象语法树)</h4><blockquote>
+<p><a href="http://0x1.im/blog/php/changes-of-php7-because-of-ast.html" target="_blank" rel="external">http://0x1.im/blog/php/changes-of-php7-because-of-ast.html</a></p>
+</blockquote>
+<p>PHP7 的内核中有一个重要的变化是加入了 AST。在 PHP5中，从 php 脚本到 opcodes 的执行的过程是：</p>
+<ol>
+<li>Lexing：词法扫描分析，将源文件转换成 token 流；</li>
+<li>Parsing：语法分析，在此阶段生成 op arrays。</li>
+</ol>
+<p>PHP7 中在语法分析阶段不再直接生成 op arrays，而是先生成 AST，所以过程多了一步：</p>
+<ol>
+<li>Lexing：词法扫描分析，将源文件转换成 token 流；</li>
+<li>Parsing：语法分析，从 token 流生成抽象语法树；</li>
+<li>Compilation：从抽象语法树生成 op arrays。</li>
+</ol>
+<h4 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h4><h5 id="zval"><a href="#zval" class="headerlink" title="zval"></a>zval</h5><blockquote>
+<p><a href="https://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html" target="_blank" rel="external">https://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html</a></p>
+<p><a href="http://0x1.im/blog/php/Internal-value-representation-in-PHP-7-part-1.html" target="_blank" rel="external">http://0x1.im/blog/php/Internal-value-representation-in-PHP-7-part-1.html</a></p>
+<p><a href="http://0x1.im/blog/php/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http://0x1.im/blog/php/Internal-value-representation-in-PHP-7-part-2.html</a></p>
+</blockquote>
+<ul>
+<li><p>zval in php5</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value &#123;</div><div class="line">    <span class="keyword">long</span> lval;                 <span class="comment">// For booleans, integers and resources</span></div><div class="line">    <span class="keyword">double</span> dval;               <span class="comment">// For floating point numbers</span></div><div class="line">    <span class="keyword">struct</span> &#123;                   <span class="comment">// For strings</span></div><div class="line">        <span class="keyword">char</span> *val;</div><div class="line">        <span class="keyword">int</span> len;</div><div class="line">    &#125; str;</div><div class="line">    HashTable *ht;             <span class="comment">// For arrays</span></div><div class="line">    zend_object_value obj;     <span class="comment">// For objects</span></div><div class="line">    zend_ast *ast;             <span class="comment">// For constant expressions</span></div><div class="line">&#125; zvalue_value;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zval_struct &#123;</div><div class="line">    zvalue_value value;</div><div class="line">    zend_uint refcount__gc;</div><div class="line">    zend_uchar type;</div><div class="line">    zend_uchar is_ref__gc;</div><div class="line">&#125; zval;</div><div class="line"><span class="comment">/*In order to support this additional cycle collector, the actually used zval structure is the following:*/</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zval_gc_info &#123;</div><div class="line">    zval z;</div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        gc_root_buffer       *buffered;</div><div class="line">        <span class="keyword">struct</span> _zval_gc_info *next;</div><div class="line">    &#125; u;</div><div class="line">&#125; zval_gc_info;</div></pre></td></tr></table></figure>
+</li>
+<li><p>PHP5 中 zval 实现方式存在的主要问题：</p>
+<ul>
+<li>zval 总是需要从堆中分配内存；</li>
+<li>zval 总是存储引用计数和循环回收的信息，即使是整型这种可能并不需要此类信息的数据；</li>
+<li>在使用对象或者资源时，直接引用会导致两次计数（原因会在下一部分讲）；</li>
+<li>某些间接访问需要一个更好的处理方式。比如现在访问存储在变量中的对象间接使用了四个指针（指针链的长度为四）。这个问题也放到下一部分讨论；</li>
+<li>直接计数也就意味着数值只能在 zval 之间共享。如果想在 zval 和 hashtable key 之间共享一个字符串就不行（除非 hashtable key 也是 zval）。</li>
+</ul>
+<p><strong>修改动机</strong></p>
+<p>这里说的都是指在 64 位的系统上。首先，由于 <code>str</code> 和 <code>obj</code> 占用的大小一样， <code>zvalue_value</code> 这个联合体占用 16 个字节（bytes）的内存。整个 <code>zval</code> 结构体占用的内存是 24 个字节（考虑到内存对齐），<code>zval_gc_info</code> 的大小是 32 个字节。综上，在堆（相对于栈）分配给 zval 的内存需要额外的 16 个字节，所以每个 zval 在不同的地方一共需要用到 48 个字节（要理解上面的计算方式需要注意每个指针在 64 位的系统上也需要占用 8 个字节）。</p>
+</li>
+<li><p>zval in php7</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> _zend_value &#123;</div><div class="line">    zend_long         lval;</div><div class="line">    <span class="keyword">double</span>            dval;</div><div class="line">    zend_refcounted  *counted;</div><div class="line">    zend_string      *str;</div><div class="line">    zend_array       *arr;</div><div class="line">    zend_object      *obj;</div><div class="line">    zend_resource    *res;</div><div class="line">    zend_reference   *ref;</div><div class="line">    zend_ast_ref     *ast;</div><div class="line"></div><div class="line">    <span class="comment">// Ignore these for now, they are special</span></div><div class="line">    zval             *zv;</div><div class="line">    <span class="keyword">void</span>             *ptr;</div><div class="line">    zend_class_entry *ce;</div><div class="line">    zend_function    *func;</div><div class="line">    <span class="keyword">struct</span> &#123;</div><div class="line">        ZEND_ENDIAN_LOHI(</div><div class="line">            <span class="keyword">uint32_t</span> w1,</div><div class="line">            <span class="keyword">uint32_t</span> w2)</div><div class="line">    &#125; ww;</div><div class="line">&#125; zend_value;</div><div class="line"><span class="keyword">struct</span> _zval_struct &#123;</div><div class="line">    zend_value value;</div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">            ZEND_ENDIAN_LOHI_4(</div><div class="line">                zend_uchar type,</div><div class="line">                zend_uchar type_flags,</div><div class="line">                zend_uchar const_flags,</div><div class="line">                zend_uchar reserved)</div><div class="line">        &#125; v;</div><div class="line">        <span class="keyword">uint32_t</span> type_info;</div><div class="line">    &#125; u1;</div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">uint32_t</span> var_flags;</div><div class="line">        <span class="keyword">uint32_t</span> next;                 <span class="comment">// hash collision chain</span></div><div class="line">        <span class="keyword">uint32_t</span> cache_slot;           <span class="comment">// literal cache slot</span></div><div class="line">        <span class="keyword">uint32_t</span> lineno;               <span class="comment">// line number (for ast nodes)</span></div><div class="line">        <span class="keyword">uint32_t</span> num_args;             <span class="comment">// arguments number for EX(This)</span></div><div class="line">        <span class="keyword">uint32_t</span> fe_pos;               <span class="comment">// foreach position</span></div><div class="line">        <span class="keyword">uint32_t</span> fe_iter_idx;          <span class="comment">// foreach iterator index</span></div><div class="line">    &#125; u2;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<ul>
+<li>zval不再总是堆分配，不再存储引用计数</li>
+<li>标量类型不在堆分配，不再引用计数</li>
+<li>移除双重引用计数</li>
+<li>引用计数存在值本身，值可以共享。如：字符串可以被zval和hashtable共享</li>
+</ul>
+</li>
+</ul>
+<h5 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h5><p>这个设计的一个很大的问题在于它无法在一个 PHP 引用变量和 PHP 非引用变量之间共享同一个值。比如下面这种情况：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$a = [];  <span class="comment">// $a         -&gt; zval_1(type=IS_ARRAY, refcount=1, is_ref=0) -&gt; HashTable_1(value=[])</span></div><div class="line">$b = $a;  <span class="comment">// $a, $b     -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span></div><div class="line">$c = $b   <span class="comment">// $a, $b, $c -&gt; zval_1(type=IS_ARRAY, refcount=3, is_ref=0) -&gt; HashTable_1(value=[])</span></div><div class="line"></div><div class="line">$d =&amp; $c; <span class="comment">// $a, $b -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span></div><div class="line">          <span class="comment">// $c, $d -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_2(value=[])</span></div><div class="line">          <span class="comment">// $d 是 $c 的引用, 但却不是 $a 的 $b, 所以这里 zval 还是需要进行复制</span></div><div class="line">          <span class="comment">// 这样我们就有了两个 zval, 一个 is_ref 的值是 0, 一个 is_ref 的值是 1.</span></div><div class="line"></div><div class="line">$d[] = <span class="number">1</span>; <span class="comment">// $a, $b -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span></div><div class="line">          <span class="comment">// $c, $d -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_2(value=[1])</span></div><div class="line">          <span class="comment">// 因为有两个分离了的 zval, $d[] = 1 的语句就不会修改 $a 和 $b 的值.</span></div></pre></td></tr></table></figure>
+<p>这种行为方式也导致在 PHP 中使用引用比普通的值要慢。比如下面这个例子：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$array = range(<span class="number">0</span>, <span class="number">1000000</span>);</div><div class="line">$ref =&amp; $array;</div><div class="line">var_dump(count($array)); <span class="comment">// &lt;-- 这里会进行分离</span></div></pre></td></tr></table></figure>
+<p>因为 <code>count()</code> 只接受传值调用，但是 <code>$array</code> 是一个 PHP 引用，所以 <code>count()</code> 在执行之前实际上会有一个对数组进行完整的复制的过程。如果 <code>$array</code> 不是引用，这种情况就不会发生了。</p>
+<h5 id="复杂类型公共头"><a href="#复杂类型公共头" class="headerlink" title="复杂类型公共头"></a>复杂类型公共头</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> _zend_refcounted &#123;</div><div class="line">    <span class="keyword">uint32_t</span> refcount;</div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">            ZEND_ENDIAN_LOHI_3(</div><div class="line">                zend_uchar    type,</div><div class="line">                zend_uchar    flags,</div><div class="line">                <span class="keyword">uint16_t</span>      gc_info)</div><div class="line">        &#125; v;</div><div class="line">        <span class="keyword">uint32_t</span> type_info;</div><div class="line">    &#125; u;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h5 id="字符串-1"><a href="#字符串-1" class="headerlink" title="字符串"></a>字符串</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> _zend_string &#123;</div><div class="line">    zend_refcounted   gc;</div><div class="line">    zend_ulong        h;        <span class="comment">/* hash value */</span></div><div class="line">    <span class="keyword">size_t</span>            len;</div><div class="line">    <span class="keyword">char</span>              val[<span class="number">1</span>];</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h5 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h5><h5 id="hashtable"><a href="#hashtable" class="headerlink" title="hashtable"></a>hashtable</h5><blockquote>
+<p><a href="http://nikic.github.io/2014/12/22/PHPs-new-hashtable-implementation.html" target="_blank" rel="external">http://nikic.github.io/2014/12/22/PHPs-new-hashtable-implementation.html</a></p>
+</blockquote>
+<ul>
+<li>php5中hash table  效率低的原因<ul>
+<li>hash表元素需要单独堆分配，额外需要8/16字节的内存，需要更多额外内存且降低缓存命中</li>
+<li>zval需要单独分配内存，</li>
+<li>双向链表需要额外的四个指针，因此索引链表十分缓存不友好</li>
+</ul>
+</li>
+<li>php7中的优势<ul>
+<li>简单类型的zval不再需要单独的内存分配，节约内存并且缓存友好</li>
+<li>zval存储简单类型不需要存储refcount和gc root buffer</li>
+<li>复杂类型嵌入refcount，他们可以被zval共享。比如字符串可以共享，这对hashtable</li>
+</ul>
+</li>
+<li>php5和php7内存管理区别<ul>
+<li>zval不再一致单独分配，节约16字节</li>
+<li>hash元素不再单独分配，节约16个字节</li>
+<li>标量类型只占用16个字节 </li>
+<li>hash元素默认就是有序的，不再需要双向链表</li>
+<li>冲突处理简单的连接，通过zval内嵌的字段</li>
+<li>zval嵌入hash元素，不再需要指针</li>
+<li>压缩数组</li>
+</ul>
+</li>
+</ul>
+<h4 id="php7新特性"><a href="#php7新特性" class="headerlink" title="php7新特性"></a>php7新特性</h4><ul>
+<li><p>标量类型声明</p>
+<p>强制模式、严格模式</p>
+</li>
+<li><p>返回类型声明</p>
+<p>同样也分为强制模式和严格模式</p>
+</li>
+<li><p>null合并运算符</p>
+</li>
+<li><p>太空船操作（组合比较符）</p>
+</li>
+<li><p>通过define 定义常量数组</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">define(<span class="string">'ANIMALS'</span>, [</div><div class="line">    <span class="string">'dog'</span>,</div><div class="line">    <span class="string">'cat'</span>,</div><div class="line">    <span class="string">'bird'</span></div><div class="line">]);</div><div class="line"></div><div class="line"><span class="keyword">echo</span> ANIMALS[<span class="number">1</span>]; <span class="comment">// outputs "cat"</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>匿名类</p>
+</li>
+<li><p>Group use decalrations</p>
+<p>从同一 namespace 导入的类、函数和常量现在可以通过单个 use 语句 一次性导入了。</p>
+</li>
+<li><p>迭代器新增return方法</p>
+</li>
+<li><p>迭代器组合</p>
+</li>
+<li><p>intdiv对除法结果取整</p>
+</li>
+</ul>
+<h4 id="php7性能优化"><a href="#php7性能优化" class="headerlink" title="php7性能优化"></a>php7性能优化</h4><ul>
+<li>记得启用Zend Opcache, 因为PHP7即使不启用Opcache速度也比PHP-5.6启用了Opcache快, 所以之前测试时期就发生了有人一直没有启用Opcache的事情.</li>
+<li>使用新的编译器</li>
+<li>Hugepage</li>
+<li>Opcache file cache</li>
+<li>PGO</li>
+</ul>
+<h4 id="php7升级注意事项"><a href="#php7升级注意事项" class="headerlink" title="php7升级注意事项"></a>php7升级注意事项</h4><ul>
+<li>mysql_escape_string 随之mysql扩展被移除</li>
+<li>HTTP_RAW_POST_DATA -&gt; php://input</li>
+</ul>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+
+
+
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Indice
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Panoramica
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categorie</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#引用变量"><span class="nav-number">1.</span> <span class="nav-text">引用变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串"><span class="nav-number">2.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#empty-vs-isset-vs-is-null"><span class="nav-number">3.</span> <span class="nav-text">empty vs isset vs is_null</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#常量"><span class="nav-number">4.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Switch"><span class="nav-number">5.</span> <span class="nav-text">Switch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展开发"><span class="nav-number">6.</span> <span class="nav-text">扩展开发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#协程"><span class="nav-number">7.</span> <span class="nav-text">协程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#协程任务调度"><span class="nav-number">7.1.</span> <span class="nav-text">协程任务调度</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#协程堆栈"><span class="nav-number">7.2.</span> <span class="nav-text">协程堆栈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误处理"><span class="nav-number">7.3.</span> <span class="nav-text">错误处理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同步阻塞-IO、同步非阻塞-IO、多路复用IO-、-异步-IO"><span class="nav-number">8.</span> <span class="nav-text">同步阻塞 IO、同步非阻塞 IO、多路复用IO 、 异步 IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php常用扩展"><span class="nav-number">9.</span> <span class="nav-text">php常用扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php生命周期"><span class="nav-number">10.</span> <span class="nav-text">php生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#两个阶段"><span class="nav-number">10.1.</span> <span class="nav-text">两个阶段</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php配置文件"><span class="nav-number">11.</span> <span class="nav-text">php配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#php-ini"><span class="nav-number">11.1.</span> <span class="nav-text">php.ini</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#php-fpm-conf"><span class="nav-number">11.2.</span> <span class="nav-text">php-fpm.conf</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串处理函数"><span class="nav-number">12.</span> <span class="nav-text">字符串处理函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数组处理函数"><span class="nav-number">13.</span> <span class="nav-text">数组处理函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#error-reporting"><span class="nav-number">14.</span> <span class="nav-text">error_reporting()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编码规范psr"><span class="nav-number">15.</span> <span class="nav-text">编码规范psr</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件读写"><span class="nav-number">16.</span> <span class="nav-text">文件读写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#preg-match"><span class="nav-number">17.</span> <span class="nav-text">preg_match</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pdo"><span class="nav-number">18.</span> <span class="nav-text">pdo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysqli"><span class="nav-number">19.</span> <span class="nav-text">mysqli</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#curl"><span class="nav-number">20.</span> <span class="nav-text">curl</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#curl-setopt"><span class="nav-number">20.1.</span> <span class="nav-text">curl_setopt()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GET-request"><span class="nav-number">20.2.</span> <span class="nav-text">GET request</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#POST-request"><span class="nav-number">20.3.</span> <span class="nav-text">POST request</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#curl-multi"><span class="nav-number">21.</span> <span class="nav-text">curl_multi</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP框架"><span class="nav-number"></span> <span class="nav-text">PHP框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Laravel-vs-Yii-vs-Symfony"><span class="nav-number">1.</span> <span class="nav-text">Laravel vs Yii vs Symfony</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#laravel"><span class="nav-number">1.1.</span> <span class="nav-text">laravel</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Symfony"><span class="nav-number">1.2.</span> <span class="nav-text">Symfony</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PHP-Composer"><span class="nav-number">2.</span> <span class="nav-text">PHP Composer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单元测试"><span class="nav-number">3.</span> <span class="nav-text">单元测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#设计模式"><span class="nav-number">4.</span> <span class="nav-text">设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#单例模式"><span class="nav-number">4.1.</span> <span class="nav-text">单例模式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存管理"><span class="nav-number">5.</span> <span class="nav-text">内存管理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#php7"><span class="nav-number"></span> <span class="nav-text">php7</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VM"><span class="nav-number">1.</span> <span class="nav-text">VM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AST-抽象语法树"><span class="nav-number">2.</span> <span class="nav-text">AST(抽象语法树)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码解析"><span class="nav-number">3.</span> <span class="nav-text">源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#zval"><span class="nav-number">3.1.</span> <span class="nav-text">zval</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#引用"><span class="nav-number">3.2.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#复杂类型公共头"><span class="nav-number">3.3.</span> <span class="nav-text">复杂类型公共头</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符串-1"><span class="nav-number">3.4.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#对象"><span class="nav-number">3.5.</span> <span class="nav-text">对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hashtable"><span class="nav-number">3.6.</span> <span class="nav-text">hashtable</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php7新特性"><span class="nav-number">4.</span> <span class="nav-text">php7新特性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php7性能优化"><span class="nav-number">5.</span> <span class="nav-text">php7性能优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php7升级注意事项"><span class="nav-number">6.</span> <span class="nav-text">php7升级注意事项</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Tema &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

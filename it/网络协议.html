@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="负载均衡https://www.cnblogs.com/ilinuxer/p/6916913.html 网络协议 https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.htmlhttps://blog.csdn.net/qq_34501940/article/details/51073691  有哪些私有或者保留地址说说    A类：1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Petrie's Home">
+<meta property="og:url" content="http://petrie.github.com/it/网络协议.html">
+<meta property="og:site_name" content="Petrie's Home">
+<meta property="og:description" content="负载均衡https://www.cnblogs.com/ilinuxer/p/6916913.html 网络协议 https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.htmlhttps://blog.csdn.net/qq_34501940/article/details/51073691  有哪些私有或者保留地址说说    A类：1">
+<meta property="og:updated_time" content="2018-08-08T14:29:28.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petrie's Home">
+<meta name="twitter:description" content="负载均衡https://www.cnblogs.com/ilinuxer/p/6916913.html 网络协议 https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.htmlhttps://blog.csdn.net/qq_34501940/article/details/51073691  有哪些私有或者保留地址说说    A类：1">
+
+
+
+
+
+
+  <link rel="canonical" href="http://petrie.github.com/网络协议.html"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Petrie's Home</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=[object Object]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '[object Object]');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="it">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Petrie's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-notes">
+    <a href="/it/summary2.html" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />notes</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categorie</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archivi</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline"></h1>
+
+<div class="post-meta">
+  
+  
+
+
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><p><a href="https://www.cnblogs.com/ilinuxer/p/6916913.html" target="_blank" rel="external">https://www.cnblogs.com/ilinuxer/p/6916913.html</a></p>
+<h2 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h2><blockquote>
+<p><a href="https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.html" target="_blank" rel="external">https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.html</a><br><a href="https://blog.csdn.net/qq_34501940/article/details/51073691" target="_blank" rel="external">https://blog.csdn.net/qq_34501940/article/details/51073691</a></p>
+<ul>
+<li>有哪些私有或者保留地址说说</li>
+</ul>
+</blockquote>
+<ul>
+<li>A类：10.0.0.0 - 10.255.255.255</li>
+<li>B类：172.16.0.0 - 172.31.255.255</li>
+<li>C类：192.168.0.0 - 192.168.255.255</li>
+</ul>
+<ul>
+<li><p>IP地址分类，简单说一下各个分类</p>
+<p>|      |        |                           |      |      |<br>| —- | —— | ————————- | —- | —- |<br>| A类   | 以0开头   | 10.0.0.0-127.255.255.255  |      |      |<br>| B类   | 以10开头  | 128.0.0.0-191.255.255.255 |      |      |<br>| C类   | 以110开头 | 192.0.0.0-2               |      |      |</p>
+</li>
+<li><p>简单解释ARP协议的工作过程</p>
+<ul>
+<li>首先，每个主机都会在自己的ARP缓存中建立一个ARP列表，已表示IP地址和mac地址之间的关系。</li>
+<li>当源主机要发送数据时，首先检查ARP列表中是否有对应的IP地址的目的主机的mac地址。如果有，则直接发送数据，如果没有，就向本网段所有主机发送ARP，该数据包包括的内容有：源主机ip地址，源主机mac地址，目的主机IP地址。</li>
+<li>当本网络所有主机收到ARP数据包时，首先检查数据包中的ip地址是否是自己的地址，如果不是则忽略数据包，</li>
+</ul>
+</li>
+<li><p>OSI七层模型</p>
+<p>应用层、表示层、会话层、传输层、网络层、数据链路层、物理层</p>
+</li>
+<li><p>TCP／IP四层模型</p>
+<p>应用层、传输层、网络互联层、网络接口层</p>
+</li>
+<li><p>了解的端口和对应的服务</p>
+<ul>
+<li>FTP：21 、SSH：22、telnet：23、http:80、HTTPS：443、oracle：1521、mysql：3306、dns：53、smtp：25</li>
+</ul>
+<p>​</p>
+</li>
+</ul>
+<h3 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h3><h4 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h4><ul>
+<li>502 作为网关或者代理工作的服务器尝试执行请求时，从上游服务器接收到无效的响应。<ul>
+<li>php-fpm没有启动,nginx无法将请求交给php-fpm</li>
+<li>php-fpm运行脚本超时，php-fpm终止了脚本的执行和执行脚本的Worker进程，nginx发现自己与php-fpm的连接断开。</li>
+</ul>
+</li>
+<li>504 <ul>
+<li>504即nginx超过了自己设置的超时时间，不等待php-fpm的返回结果，直接给客户端返回504错误。但是此时php-fpm依然还在处理请求（在没有超出自己的超时时间的情况下）。</li>
+<li>这里有三个相关的配置：<ul>
+<li>fastcgi_connect_timeout 300;<br>指定连接到后端FastCGI的超时时间。</li>
+<li>fastcgi_send_timeout 300;<br>向FastCGI传送请求的超时时间，这个值是指已经完成两次握手后向FastCGI传送请求的超时时间。</li>
+<li>fastcgi_read_timeout 300;<br>接收FastCGI应答的超时时间，这个值是指已经完成两次握手后接收FastCGI应答的超时时间。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>499 客户端主动断开链接，一般是因为超时导致</li>
+<li>301 被请求的资源已永久移动到新位置</li>
+<li>302 要求客户端执行临时重定向</li>
+<li>304 表示资源未被修改</li>
+<li>401 用户没有必要的凭据</li>
+<li>403 服务器已经理解请求，但是拒绝执行它</li>
+</ul>
+<h4 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h4><p>通常我们有两种方式给浏览器设置或获取Cookie，分别是HTTP Response Headers 中的Set-Cookie和HTTP Request Headers中的Cookie Header，以及通过JavaScript对document.cookie进行赋值或取值。</p>
+<h4 id="安全相关的HTTP响应头"><a href="#安全相关的HTTP响应头" class="headerlink" title="安全相关的HTTP响应头"></a>安全相关的HTTP响应头</h4><h5 id="Strict-Transport-Security"><a href="#Strict-Transport-Security" class="headerlink" title="Strict-Transport-Security"></a>Strict-Transport-Security</h5><p>支持HSTS的浏览器遇到这个响应头，会把当前网站加入HSTS列表，然后再max-age指定的秒数内。当前网站所有请求都会被重定向为https。</p>
+<h5 id="X-Frame-Options"><a href="#X-Frame-Options" class="headerlink" title="X-Frame-Options"></a>X-Frame-Options</h5><p>是为了减少劫持二引入的一个响应头</p>
+<p>这个响应头支持三种配置：</p>
+<ul>
+<li>DENY：不允许被任何页面嵌入</li>
+<li>SAMEORIGN：不允许被本域以外的页面嵌入</li>
+<li>ALLOW-FROM uri：不允许被指定的域名以外的页面嵌入</li>
+</ul>
+<h5 id="X-XSS-Protection"><a href="#X-XSS-Protection" class="headerlink" title="X-XSS-Protection"></a>X-XSS-Protection</h5><p>这个响应头是用来防范XSS的。它有集中配置：</p>
+<ul>
+<li>0：禁用XSS保护</li>
+<li>1：启用XSS保护</li>
+<li>1；mode=block：启用XSS保护，并在检查到XSS攻击时，停止渲染页面。</li>
+</ul>
+<h5 id="X-Content-Type-Options"><a href="#X-Content-Type-Options" class="headerlink" title="X-Content-Type-Options"></a>X-Content-Type-Options</h5><h4 id="Transfer-Encoding"><a href="#Transfer-Encoding" class="headerlink" title="Transfer-Encoding"></a>Transfer-Encoding</h4><p>Transfer-Encoding 是一个HTTP头部字段，字面意思是传输编码。实际上，HTTP协议中还有另外一个头部与编码相关：Content-Encode（内容编码）。Transfer-Encoding则是用来改变报文格式。</p>
+<h5 id="Persistent-Connection（长连接）"><a href="#Persistent-Connection（长连接）" class="headerlink" title="Persistent Connection（长连接）"></a>Persistent Connection（长连接）</h5><p>HTTP 1.0的持久连接机智是后来才引入的，通过Connection：keep-alive这个头部实现，服务端和客户端都可以使用它告诉对方在发送完数据后不要断开TCP连接。</p>
+<p>HTTP 1.1 则规定所有连接都必须是持久的，除非显示的在头部加上Connection：close。所以实际上，HTTP1.1中Connection这个头部字段已经没有keep-alive这个取值了。</p>
+<p>对于非持久连接，浏览器可以通过连接是否关闭来界定请求或响应实体的边界；而对于持久连接，这种方法显然不奏效。</p>
+<h5 id="Content-Length"><a href="#Content-Length" class="headerlink" title="Content-Length"></a>Content-Length</h5><p>要解决这个问题，最容易想到的办法就是计算实体长度。并通过头部告诉对方。如果长度不一致，如果Content-length长度比实际长度短，会造成内容被截断；如果比实体内容长，会造成pending。</p>
+<h5 id="Transfer-Encoding：chunked"><a href="#Transfer-Encoding：chunked" class="headerlink" title="Transfer-Encoding：chunked"></a>Transfer-Encoding：chunked</h5><p>头部加入了Transfer-Encoding:chunked后，就代表这个报文采用了分块编码。最后一个分块长度必须为0，对应分块数据没有内容，表示实体结束。</p>
+<p>前面说过Content-Encoding和Transfer-Encoding二者经常会结合来用，其实就是针对Transfer-Encoding的分块再进行Content-Encoding。</p>
+<h4 id="Accept-Encoding-Content-Encode"><a href="#Accept-Encoding-Content-Encode" class="headerlink" title="Accept-Encoding/Content-Encode"></a>Accept-Encoding/Content-Encode</h4><p>工作机制：通过Accept-Encoding带上自己支持的编码格式列表；服务端从中调选一种用来进行文本编码，并通过Content-Encoding指明选定的格式。</p>
+<h4 id="用户IP"><a href="#用户IP" class="headerlink" title="用户IP"></a>用户IP</h4><ul>
+<li>直接对外提供服务的web应用，在进行与安全相关的操作时，只能通过Remote Address获取真实ip。</li>
+<li>使用Nginx等Web Server进行反向代理的web应用，在配置正确的前提下，要用X-Forwarded-For最后一节或X-Real-IP来获取IP（因为RemoteAddress得到的IP是nginx所在的服务器的IP）；</li>
+</ul>
+<h5 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h5><p>用来表示请求的真实ip</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">X-Forwarded-For: client, proxy1, proxy2</div></pre></td></tr></table></figure>
+<h5 id="X-Real-IP"><a href="#X-Real-IP" class="headerlink" title="X-Real-IP"></a>X-Real-IP</h5><p>产生TCP连接的设备</p>
+<h5 id="Remote-Address"><a href="#Remote-Address" class="headerlink" title="Remote Address"></a>Remote Address</h5><p>通过 Nginx 访问 Node.js 服务，得到的 Remote Address 实际上是 Nginx 的本地 IP。</p>
+<h4 id="Vary"><a href="#Vary" class="headerlink" title="Vary"></a>Vary</h4><p>Vary用来列出一个相应字段列表，告诉缓存服务器遇到同一个URL对应不同版本文档的时候，如何缓存和筛选合适的版本。</p>
+<h4 id="SSE"><a href="#SSE" class="headerlink" title="SSE"></a>SSE</h4><p>我们知道HTTP只能由客户端发起连接，在由服务期响应，SSE也是这样，只不过服务端会保持这个链接，多次发送相应。</p>
+<h4 id="WS（Websocket）"><a href="#WS（Websocket）" class="headerlink" title="WS（Websocket）"></a>WS（Websocket）</h4><p>Websocket是基于TCP实现的，HTTP协议中的那些概念都不复存在。但他还是依赖于HTTP，因为Websocket的握手阶段利用了HTTP的Upgrade机制。一旦握手完成，后续数据传输就直接在TCP上完成。</p>
+<h4 id="从nginx默认不压缩http1-0说起"><a href="#从nginx默认不压缩http1-0说起" class="headerlink" title="从nginx默认不压缩http1.0说起"></a>从nginx默认不压缩http1.0说起</h4><p>对于TCP持久连接的HTTP报文，客户端需要一种机制来准确判断结束位置。而在HTTP1.0中，这种机制只有Content-length。于是，对于本文前面提出的情况，HTTP只能要么不压缩，要么不启用持久连接（对于非持久连接，TCP断开就可以认为HTTP报文结束），而nginx默认选择前者。</p>
+<h4 id="简述GET和POST区别"><a href="#简述GET和POST区别" class="headerlink" title="简述GET和POST区别"></a>简述GET和POST区别</h4><ul>
+<li>从原理上看<ul>
+<li>根据http规范，GET用于信息获取，而且应该是安全和幂等的</li>
+<li>根据http规范，POST请求用于表示可能修改服务器上资源的请求</li>
+</ul>
+</li>
+<li>从表面上看<ul>
+<li>GET请求的数据会附在URL后面，POST的数据放在HTTP包体</li>
+<li>POST安全性比GET安全性高</li>
+</ul>
+</li>
+</ul>
+<h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h3><p>屈光宇</p>
+<h4 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h4><ul>
+<li>内容加密</li>
+<li>身份认证</li>
+<li>数据完整性</li>
+</ul>
+<h4 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h4><p>对称加密有点是强度非常高，难破解。缺点是无法安全的生成和保存密钥，需要管理海量密钥</p>
+<h4 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h4><p>非对称加密主要用于密钥交换。</p>
+<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><ul>
+<li>CPU计算资源消耗非常大。一次完全的TLS握手，密钥交换时的非对称解密计算量占整个握手过程的90%以上。而对称加密的计算量只相当于非对称加密的0.1%。</li>
+<li>非对称加密对加密内容的长度有限制，不能超过公钥长度。</li>
+</ul>
+<h5 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h5><ul>
+<li>RSA：算法实现简单，诞生于1977年。安全性高。缺点就是需要比较大的素数来保证安全强度，很消耗CPU，RSA是目前唯一一个既能用户密钥交换又能用于证书签名的算法</li>
+<li>DH：diffie-hellman 诞生于1977年，但是1999年才公开，缺点是比较消耗CPU性能。</li>
+<li>ECDHE：使用椭圆曲线（ECC）的DH算法，有点是能用较小的素数（256位）实现RSA相同的安全等级。缺点是算法实现复杂，用于密钥交换的历史不长。</li>
+<li>ECDH：不支持PFS</li>
+<li>DHE：不支持ECC。非常消耗CPU资源。</li>
+</ul>
+<h4 id="False-Start"><a href="#False-Start" class="headerlink" title="False Start"></a>False Start</h4><p>False Start 有抢跑的意思，意味着不按规则行事。TLS False Start 是指客户端在发送Change Cipher Spec Finished同事发送应用数据，服务端在TLS握手完成时直接返回应用数据。</p>
+<h4 id="证书链"><a href="#证书链" class="headerlink" title="证书链"></a>证书链</h4><p>配置证书链的最佳实践是只包含站点证书和中间证书，不要包含根证书，也不要漏掉中间证书。大部分站点证书链都是“站点证书-中间证书-根证书”这样三级，这时服务器端只需要发送前两个证书即可。但也有的证书链又四级，那就需要发送站点证书外加两个中间证书了。</p>
+<h4 id="ECC-certificate"><a href="#ECC-certificate" class="headerlink" title="ECC certificate"></a>ECC certificate</h4><p>如果需要进一步减小证书大小，可以选择ECC证书。256位的ECC key等同于3072位的RSA key，在确保安全性的同时，体积大幅减小。</p>
+<p>ECC证书这么好，为什么没有普及呢？最主要的原因是他的支持情况并不好。所以，确定使用ECC证书前需要明确用户分布情况。</p>
+<h3 id="HTTP-2"><a href="#HTTP-2" class="headerlink" title="HTTP 2"></a>HTTP 2</h3><h3 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h3><h4 id="WAIT"><a href="#WAIT" class="headerlink" title="-WAIT"></a>-WAIT</h4><h5 id="TIME-WAIT存在的主要原因有两点"><a href="#TIME-WAIT存在的主要原因有两点" class="headerlink" title="TIME-WAIT存在的主要原因有两点"></a>TIME-WAIT存在的主要原因有两点</h5><blockquote>
+<p><a href="http://blog.csdn.net/slvher/article/details/8941873" target="_blank" rel="external">http://blog.csdn.net/slvher/article/details/8941873</a></p>
+<p><a href="http://blog.csdn.net/whuslei/article/details/6667471" target="_blank" rel="external">http://blog.csdn.net/whuslei/article/details/6667471</a></p>
+</blockquote>
+<ol>
+<li><p>为实现TCP这种全双工（full-duplex）连接的可靠释放</p>
+<p>参考本文前面给出的TCP释放连接4次挥手示意图，假设发起active close的一方（图中为client）发送的ACK（4次交互的最后一个包）在网络中丢失，那么由于TCP的重传机制，执行passiveclose的一方（图中为server）需要重发其FIN，在该FIN到达client（client是active close发起方）之前，client必须维护这条连接的状态（尽管它已调用过close），具体而言，就是这条TCP连接对应的（local_ip, local_port）资源不能被立即释放或重新分配。直到romete peer重发的FIN达到，client也重发ACK后，该TCP连接才能恢复初始的CLOSED状态。<strong>如果activeclose方不进入TIME_WAIT以维护其连接状态，则当passive close方重发的FIN达到时，active close方的TCP传输层会以RST包响应对方，这会被对方认为有错误发生（而事实上，这是正常的关闭连接过程，并非异常）。</strong></p>
+</li>
+<li><p>为使旧的数据包在网络因过期而消失</p>
+<p>为说明这个问题，我们先假设TCP协议中不存在TIME_WAIT状态的限制，再假设当前有一条TCP连接：(local_ip, local_port, remote_ip,remote_port)，因某些原因，我们先关闭，接着很快以相同的四元组建立一条新连接。本文前面介绍过，TCP连接由四元组唯一标识，因此，在我们假设的情况中，TCP协议栈是无法区分前后两条TCP连接的不同的，在它看来，这根本就是同一条连接，中间先释放再建立的过程对其来说是“感知”不到的。这样就可能发生这样的情况：前一条TCP连接由local peer发送的数据到达remote peer后，会被该remot peer的TCP传输层当做当前TCP连接的正常数据接收并向上传递至应用层（而事实上，在我们假设的场景下，这些旧数据到达remote peer前，旧连接已断开且一条由相同四元组构成的新TCP连接已建立，因此，这些旧数据是不应该被向上传递至应用层的），从而引起数据错乱进而导致各种无法预知的诡异现象。作为一种可靠的传输协议，TCP必须在协议层面考虑并避免这种情况的发生，这正是TIME_WAIT状态存在的第2个原因。  </p>
+<pre><code>具体而言，local peer主动调用close后，此时的TCP连接进入TIME\_WAIT状态，处于该状态下的TCP连接不能立即以同样的四元组建立新连接，即发起active close的那方占用的local port在TIME\_WAIT期间不能再被重新分配。由于TIME\_WAIT状态持续时间为2MSL，这样保证了旧TCP连接双工链路中的旧数据包均因过期（超过MSL）而消失，此后，就可以用相同的四元组建立一条新连接而不会发生前后两次连接数据错乱的情况。
+</code></pre><p>​</p>
+</li>
+</ol>
+<h4 id="Common-Sense"><a href="#Common-Sense" class="headerlink" title="Common Sense"></a>Common Sense</h4><ul>
+<li><p>TCP和UDP的区别</p>
+<ul>
+<li>TCP面向连接，UDP面向非连接</li>
+<li>TCP提供可靠的服务，UDP无法保证</li>
+<li>TCP面向字节流，UDP面向报文</li>
+<li>TCP传输数据慢，UDP数据传输快</li>
+</ul>
+</li>
+<li><p>TCP三次握手</p>
+<ul>
+<li>第一次握手，客户端发送连接请求报文段，将SYN位置为1，sequence number为x，然后客户端进入SYN_SEND状态，等待服务器确认</li>
+<li>第二次握手，服务端收到客户端的SYN报文段，需要对这个SYN报文段进行确认，设置Acknowledgment Number为x＋1；同时，自己还要发送SYN请求信息，将SYN位置为1，Sequence Number为y，服务端将上述所有信息昂岛一个报文段（SYN＋ACK报文）中，一并发送给客户端，此时服务端进入SYN_RECV状态。</li>
+<li>第三次握手，客户端收到SYN_ACK报文段。然后将Acknowledgment Number设置为y+1，向服务端发送ACK报文段，这个报文段发送完毕之后，客户端和服务端都进入ESTANBLISHED状态，完成TCP三次握手</li>
+</ul>
+<p>​</p>
+</li>
+</ul>
+<h4 id="慢启动"><a href="#慢启动" class="headerlink" title="慢启动"></a>慢启动</h4><p>The sender starts by transmitting one segment and waiting for its ACK.  When that ACK is received, the congestion window is incremented from one to two, and two segments can be sent.  When each of those two segments is acknowledged, the congestion window is increased to four.  This provides an exponential growth, although it is not exactly exponential because the receiver may delay its ACKs, typically sending one ACK for every two segments that it receives.</p>
+<p>The sender can   transmit up to the minimum of the congestion window and the   advertised window.  The congestion window is flow control imposed by   the sender, while the advertised window is flow control imposed bythe receiver.</p>
+<blockquote>
+<p>maxcdn：<a href="https://www.maxcdn.com/one/visual-glossary/tcp-slow-start/" target="_blank" rel="external">https://www.maxcdn.com/one/visual-glossary/tcp-slow-start/</a></p>
+<p>rfc文档：<a href="https://tools.ietf.org/html/rfc2001" target="_blank" rel="external">https://tools.ietf.org/html/rfc2001</a></p>
+</blockquote>
+<h4 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h4><p>If cwnd is less than or equal to ssthresh, TCP is in slow start; otherwise TCP is performing congestion avoidance.</p>
+<p>Slow start has cwnd begin at one segment, and be incremented byone segment every time an ACK is received.  As mentioned earlier,this opens the window exponentially:  send one segment, then two,then four, and so on.  Congestion avoidance dictates that cwnd beincremented by segsize*segsize/cwnd each time an ACK is received,where segsize is the segment size and cwnd is maintained in bytes.This is a linear growth of cwnd, compared to slow start’sexponential growth.  The increase in cwnd should be at most onesegment each round-trip time (regardless how many ACKs arereceived in that RTT), whereas slow start increments cwnd by thenumber of ACKs received in a round-trip time.</p>
+<h4 id="快速重传"><a href="#快速重传" class="headerlink" title="快速重传"></a>快速重传</h4><p>快重传算法还规定，发送方只要一连收到三个重复确认就应当立即重传对方尚未收到的报文段M3，而不必继续等待M3设置的重传计时器到期。由于发送方尽早重传未被确认的报文段，因此采用快重传后可以使整个网络吞吐量提高约20%。</p>
+<h4 id="快速恢复"><a href="#快速恢复" class="headerlink" title="快速恢复"></a>快速恢复</h4><p>快重传配合使用的还有快恢复算法，其过程有以下两个要点：</p>
+<ul>
+<li>当发送方连续收到三个重复确认，就执行“乘法减小”算法，把慢开始门限ssthresh减半。这是为了预防网络发生拥塞。请注意：接下去不执行慢开始算法。</li>
+<li><p>由于发送方现在认为网络很可能没有发生拥塞，因此与慢开始不同之处是现在不执行慢开始算法（即拥塞窗口cwnd现在不设置为1），而是把cwnd值设置为慢开始门限ssthresh减半后的数值，然后开始执行拥塞避免算法（“加法增大”），使拥塞窗口缓慢地线性增大。</p>
+<p>也有的快重传实现是把开始时的拥塞窗口cwnd值再增大一点，即等于 ssthresh + 3 X MSS 。这样做的理由是：既然发送方收到三个重复的确认，就表明有三个分组已经离开了网络。这三个分组不再消耗网络 的资源而是停留在接收方的缓存中。可见现在网络中并不是堆积了分组而是减少了三个分组。因此可以适当把拥塞窗口扩大了些。</p>
+</li>
+</ul>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+
+
+
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Indice
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Panoramica
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Petrie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">categorie</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Petrie" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:lpfvip2008@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#负载均衡"><span class="nav-number">1.</span> <span class="nav-text">负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络协议"><span class="nav-number">2.</span> <span class="nav-text">网络协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP"><span class="nav-number">2.1.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#状态码"><span class="nav-number">2.1.1.</span> <span class="nav-text">状态码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie"><span class="nav-number">2.1.2.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安全相关的HTTP响应头"><span class="nav-number">2.1.3.</span> <span class="nav-text">安全相关的HTTP响应头</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Strict-Transport-Security"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">Strict-Transport-Security</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#X-Frame-Options"><span class="nav-number">2.1.3.2.</span> <span class="nav-text">X-Frame-Options</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#X-XSS-Protection"><span class="nav-number">2.1.3.3.</span> <span class="nav-text">X-XSS-Protection</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#X-Content-Type-Options"><span class="nav-number">2.1.3.4.</span> <span class="nav-text">X-Content-Type-Options</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transfer-Encoding"><span class="nav-number">2.1.4.</span> <span class="nav-text">Transfer-Encoding</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Persistent-Connection（长连接）"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">Persistent Connection（长连接）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Content-Length"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">Content-Length</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Transfer-Encoding：chunked"><span class="nav-number">2.1.4.3.</span> <span class="nav-text">Transfer-Encoding：chunked</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Accept-Encoding-Content-Encode"><span class="nav-number">2.1.5.</span> <span class="nav-text">Accept-Encoding/Content-Encode</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用户IP"><span class="nav-number">2.1.6.</span> <span class="nav-text">用户IP</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#X-Forwarded-For"><span class="nav-number">2.1.6.1.</span> <span class="nav-text">X-Forwarded-For</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#X-Real-IP"><span class="nav-number">2.1.6.2.</span> <span class="nav-text">X-Real-IP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Remote-Address"><span class="nav-number">2.1.6.3.</span> <span class="nav-text">Remote Address</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Vary"><span class="nav-number">2.1.7.</span> <span class="nav-text">Vary</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SSE"><span class="nav-number">2.1.8.</span> <span class="nav-text">SSE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WS（Websocket）"><span class="nav-number">2.1.9.</span> <span class="nav-text">WS（Websocket）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从nginx默认不压缩http1-0说起"><span class="nav-number">2.1.10.</span> <span class="nav-text">从nginx默认不压缩http1.0说起</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#简述GET和POST区别"><span class="nav-number">2.1.11.</span> <span class="nav-text">简述GET和POST区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.2.</span> <span class="nav-text">HTTPS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主要功能"><span class="nav-number">2.2.1.</span> <span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对称加密"><span class="nav-number">2.2.2.</span> <span class="nav-text">对称加密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非对称加密"><span class="nav-number">2.2.3.</span> <span class="nav-text">非对称加密</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#缺点"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#算法"><span class="nav-number">2.2.3.2.</span> <span class="nav-text">算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#False-Start"><span class="nav-number">2.2.4.</span> <span class="nav-text">False Start</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#证书链"><span class="nav-number">2.2.5.</span> <span class="nav-text">证书链</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ECC-certificate"><span class="nav-number">2.2.6.</span> <span class="nav-text">ECC certificate</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-2"><span class="nav-number">2.3.</span> <span class="nav-text">HTTP 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP"><span class="nav-number">2.4.</span> <span class="nav-text">TCP/IP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WAIT"><span class="nav-number">2.4.1.</span> <span class="nav-text">-WAIT</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TIME-WAIT存在的主要原因有两点"><span class="nav-number">2.4.1.1.</span> <span class="nav-text">TIME-WAIT存在的主要原因有两点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Common-Sense"><span class="nav-number">2.4.2.</span> <span class="nav-text">Common Sense</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#慢启动"><span class="nav-number">2.4.3.</span> <span class="nav-text">慢启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拥塞避免"><span class="nav-number">2.4.4.</span> <span class="nav-text">拥塞避免</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快速重传"><span class="nav-number">2.4.5.</span> <span class="nav-text">快速重传</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快速恢复"><span class="nav-number">2.4.6.</span> <span class="nav-text">快速恢复</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Petrie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Tema &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.6</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
