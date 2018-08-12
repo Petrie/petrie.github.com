@@ -108,17 +108,17 @@
 
 
 
-  <meta name="description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+  <meta name="description" content="缓存架构#####进程内缓存 #####到底选Redis还是Memcache，看看源码怎么说  什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。   什么时候倾向于选择memcache 纯KV，数据量非常大，并发量非常">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Petrie's Home">
 <meta property="og:url" content="http://petrie.github.com/it/数据库.html">
 <meta property="og:site_name" content="Petrie's Home">
-<meta property="og:description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+<meta property="og:description" content="缓存架构#####进程内缓存 #####到底选Redis还是Memcache，看看源码怎么说  什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。   什么时候倾向于选择memcache 纯KV，数据量非常大，并发量非常">
 <meta property="og:image" content="https://cwiki.apache.org/confluence/download/attachments/24193436/service.png?version=1&modificationDate=1295027310000&api=v2">
-<meta property="og:updated_time" content="2018-08-12T05:00:22.509Z">
+<meta property="og:updated_time" content="2018-08-12T08:53:51.773Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Petrie's Home">
-<meta name="twitter:description" content="缓存架构 进程内缓存 到底选Redis还是Memcache，看看源码怎么说 什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。       ##数据库 概论 redis、memcache、mongoDB 对比  操作的便">
+<meta name="twitter:description" content="缓存架构#####进程内缓存 #####到底选Redis还是Memcache，看看源码怎么说  什么时候倾向于选择Redis 复杂数据结构 持久化：mc无法满足持久化的需求，只得选择redis 天然高可用：支持主从 存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。   什么时候倾向于选择memcache 纯KV，数据量非常大，并发量非常">
 <meta name="twitter:image" content="https://cwiki.apache.org/confluence/download/attachments/24193436/service.png?version=1&modificationDate=1295027310000&api=v2">
 
 
@@ -334,19 +334,67 @@
       <div class="post-body">
         
         
-          <h2 id="缓存架构"><a href="#缓存架构" class="headerlink" title="缓存架构"></a>缓存架构</h2><ul>
-<li>进程内缓存</li>
-<li>到底选Redis还是Memcache，看看源码怎么说<ul>
+          <h2 id="缓存架构"><a href="#缓存架构" class="headerlink" title="缓存架构"></a>缓存架构</h2><p>#####进程内缓存</p>
+<p>#####到底选Redis还是Memcache，看看源码怎么说</p>
+<ul>
 <li>什么时候倾向于选择Redis<ul>
 <li>复杂数据结构</li>
 <li>持久化：mc无法满足持久化的需求，只得选择redis</li>
 <li>天然高可用：支持主从</li>
 <li>存储的内容比较大：memcache的value存储，最大为1M，如果存储的value很大，只能使用redis。</li>
-<li></li>
+</ul>
+</li>
+<li>什么时候倾向于选择memcache<ul>
+<li>纯KV，数据量非常大，并发量非常大的业务，使用memcache或许更适合。</li>
 </ul>
 </li>
 </ul>
+<p>#####<strong>如何应对潜在的雪崩？</strong></p>
+<ul>
+<li>常见方案一：高可用缓存</li>
+<li>常见方案二：缓存水平切分</li>
+<li>db限流</li>
+<li>快速失败</li>
+</ul>
+<p>#####究竟先操作缓存，还是数据库？</p>
+<ul>
+<li>读请求，先读缓存，如果没有命中，读数据库，再set回缓存</li>
+<li>写请求<ul>
+<li>先缓存，再数据库</li>
+<li>缓存，使用delete，而不是set </li>
+</ul>
 </li>
+</ul>
+<p>#####Cache Aside Pattern（旁路缓存模式）</p>
+<ul>
+<li><p>对于读请求</p>
+<ul>
+<li>先读cache，再读db</li>
+<li>如果，cache hit，则直接返回数据</li>
+<li>如果，cache miss，则访问db，并将数据set回缓存</li>
+</ul>
+</li>
+<li><p>对于写请求</p>
+<ul>
+<li>淘汰缓存，而不是更新缓存</li>
+<li>先操作数据库，再淘汰缓存</li>
+</ul>
+</li>
+<li><p>Cache Aside Pattern方案存在什么问题？</p>
+<p>如果先操作数据库，再淘汰缓存，在原子性被破坏时：</p>
+<ul>
+<li>修改数据库成功了</li>
+<li>淘汰缓存失败了</li>
+</ul>
+<p>导致，数据库与缓存的数据不一致。</p>
+</li>
+</ul>
+<p>#####数据库主从不一致，怎么解？ </p>
+<p>数据库主库和从库不一致，常见有这么几种优化方案：</p>
+<ul>
+<li>业务可以接受，系统不优化</li>
+<li>强制读主，高可用主库，用缓存提高读性能</li>
+<li>在cache里记录哪些记录发生过写请求，来路由读主还是读从</li>
 </ul>
 <p>##数据库</p>
 <h3 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h3><ul>
