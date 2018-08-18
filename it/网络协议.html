@@ -114,10 +114,12 @@
 <meta property="og:url" content="http://petrie.github.com/it/网络协议.html">
 <meta property="og:site_name" content="Petrie's Home">
 <meta property="og:description" content="负载均衡https://www.cnblogs.com/ilinuxer/p/6916913.html 网络协议 https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.htmlhttps://blog.csdn.net/qq_34501940/article/details/51073691  有哪些私有或者保留地址说说    A类：1">
-<meta property="og:updated_time" content="2018-08-08T14:29:28.319Z">
+<meta property="og:image" content="http://petrie.github.com/it/attach/0_131271823564Rx.png">
+<meta property="og:updated_time" content="2018-08-18T00:12:22.411Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Petrie's Home">
 <meta name="twitter:description" content="负载均衡https://www.cnblogs.com/ilinuxer/p/6916913.html 网络协议 https://www.cnblogs.com/li-hao/archive/2011/12/07/2279912.htmlhttps://blog.csdn.net/qq_34501940/article/details/51073691  有哪些私有或者保留地址说说    A类：1">
+<meta name="twitter:image" content="http://petrie.github.com/it/attach/0_131271823564Rx.png">
 
 
 
@@ -490,7 +492,9 @@
 <li>第二次握手，服务端收到客户端的SYN报文段，需要对这个SYN报文段进行确认，设置Acknowledgment Number为x＋1；同时，自己还要发送SYN请求信息，将SYN位置为1，Sequence Number为y，服务端将上述所有信息昂岛一个报文段（SYN＋ACK报文）中，一并发送给客户端，此时服务端进入SYN_RECV状态。</li>
 <li>第三次握手，客户端收到SYN_ACK报文段。然后将Acknowledgment Number设置为y+1，向服务端发送ACK报文段，这个报文段发送完毕之后，客户端和服务端都进入ESTANBLISHED状态，完成TCP三次握手</li>
 </ul>
-<p>​</p>
+</li>
+<li><p>图解三次握手和三次挥手</p>
+<p><img src="attach/0_131271823564Rx.png" alt="img"></p>
 </li>
 </ul>
 <h4 id="慢启动"><a href="#慢启动" class="headerlink" title="慢启动"></a>慢启动</h4><p>The sender starts by transmitting one segment and waiting for its ACK.  When that ACK is received, the congestion window is incremented from one to two, and two segments can be sent.  When each of those two segments is acknowledged, the congestion window is increased to four.  This provides an exponential growth, although it is not exactly exponential because the receiver may delay its ACKs, typically sending one ACK for every two segments that it receives.</p>
