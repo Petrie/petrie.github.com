@@ -108,16 +108,18 @@
 
 
 
-  <meta name="description" content="美团：领域驱动设计在互联网业务开发中的实践  https://tech.meituan.com/DDD_in_%20practice.html  infoq网上书店示例：领域驱动设计和实践  https://www.infoq.com/cn/articles/cjq-ddd  浅谈命令查询职责分离(CQRS)模式 http://www.cnblogs.com/yangecnu/p/Introduc">
+  <meta name="description" content="设计模式创建型模式####结构型模式 ####行为型模式 UML 泛化 关系：继承   ​    箭头：三角箭头的实线，箭头指向父类  实现 关系：类与接口   ​    箭头：三角箭头的虚线，箭头指向接口  关联 关系：一种拥有关系，使一个类知道另一个类的属性和方法 代码：成员变量 箭头：带普通箭头的实线，指向被拥有者。有双向的有单向的，双向的箭头可以有两个箭头或者没有箭头  聚合： 关系：是整">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Petrie's Home">
 <meta property="og:url" content="http://petrie.github.com/it/软件工程.html">
 <meta property="og:site_name" content="Petrie's Home">
-<meta property="og:description" content="美团：领域驱动设计在互联网业务开发中的实践  https://tech.meituan.com/DDD_in_%20practice.html  infoq网上书店示例：领域驱动设计和实践  https://www.infoq.com/cn/articles/cjq-ddd  浅谈命令查询职责分离(CQRS)模式 http://www.cnblogs.com/yangecnu/p/Introduc">
-<meta property="og:updated_time" content="2018-08-16T05:08:02.956Z">
+<meta property="og:description" content="设计模式创建型模式####结构型模式 ####行为型模式 UML 泛化 关系：继承   ​    箭头：三角箭头的实线，箭头指向父类  实现 关系：类与接口   ​    箭头：三角箭头的虚线，箭头指向接口  关联 关系：一种拥有关系，使一个类知道另一个类的属性和方法 代码：成员变量 箭头：带普通箭头的实线，指向被拥有者。有双向的有单向的，双向的箭头可以有两个箭头或者没有箭头  聚合： 关系：是整">
+<meta property="og:image" content="http://petrie.github.com/it/attach/0_1330497855hqk2.png">
+<meta property="og:updated_time" content="2018-08-20T01:01:49.687Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Petrie's Home">
-<meta name="twitter:description" content="美团：领域驱动设计在互联网业务开发中的实践  https://tech.meituan.com/DDD_in_%20practice.html  infoq网上书店示例：领域驱动设计和实践  https://www.infoq.com/cn/articles/cjq-ddd  浅谈命令查询职责分离(CQRS)模式 http://www.cnblogs.com/yangecnu/p/Introduc">
+<meta name="twitter:description" content="设计模式创建型模式####结构型模式 ####行为型模式 UML 泛化 关系：继承   ​    箭头：三角箭头的实线，箭头指向父类  实现 关系：类与接口   ​    箭头：三角箭头的虚线，箭头指向接口  关联 关系：一种拥有关系，使一个类知道另一个类的属性和方法 代码：成员变量 箭头：带普通箭头的实线，指向被拥有者。有双向的有单向的，双向的箭头可以有两个箭头或者没有箭头  聚合： 关系：是整">
+<meta name="twitter:image" content="http://petrie.github.com/it/attach/0_1330497855hqk2.png">
 
 
 
@@ -332,7 +334,46 @@
       <div class="post-body">
         
         
-          <p>美团：领域驱动设计在互联网业务开发中的实践</p>
+          <h3 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h3><h4 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h4><p>####结构型模式</p>
+<p>####行为型模式</p>
+<h3 id="UML"><a href="#UML" class="headerlink" title="UML"></a>UML</h3><ol>
+<li><p>泛化</p>
+<p>关系：继承</p>
+</li>
+</ol>
+<p>​    箭头：三角箭头的实线，箭头指向父类</p>
+<ol>
+<li><p>实现</p>
+<p>关系：类与接口</p>
+</li>
+</ol>
+<p>​    箭头：三角箭头的虚线，箭头指向接口</p>
+<ol>
+<li><p>关联</p>
+<p>关系：一种拥有关系，使一个类知道另一个类的属性和方法</p>
+<p>代码：成员变量</p>
+<p>箭头：带普通箭头的实线，指向被拥有者。有双向的有单向的，双向的箭头可以有两个箭头或者没有箭头</p>
+</li>
+<li><p>聚合：</p>
+<p>关系：是整体与部分的关系，例如车和轮胎。聚合是关联的一种，是强的关联，关联和聚合在代码上无法区分</p>
+<p>代码：成员变量</p>
+<p>箭头：带空心棱形的实线，菱形指向整体</p>
+</li>
+<li><p>组合：</p>
+<p>关系：整体与部分的关系，公司和部门。组合是关联的一种，比聚合还要强。</p>
+<p>代码：成员变量</p>
+<p>箭头：带实心棱形的实线，菱形指向整体</p>
+</li>
+<li><p>依赖：</p>
+<p>关系：一种使用的关系</p>
+<p>代码：局部变量、方法参数</p>
+<p>箭头：带箭头的虚线，指向被使用者</p>
+</li>
+</ol>
+<p>图例</p>
+<p><img src="attach/0_1330497855hqk2.png" alt="img"></p>
+<p>###领域驱动</p>
+<p>美团：领域驱动设计在互联网业务开发中的实践</p>
 <blockquote>
 <p><a href="https://tech.meituan.com/DDD_in_%20practice.html" target="_blank" rel="external">https://tech.meituan.com/DDD_in_%20practice.html</a></p>
 </blockquote>
@@ -416,8 +457,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Indice
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Panoramica
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -733,6 +783,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#设计模式"><span class="nav-number">1.</span> <span class="nav-text">设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建型模式"><span class="nav-number">1.1.</span> <span class="nav-text">创建型模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML"><span class="nav-number">2.</span> <span class="nav-text">UML</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -760,7 +826,7 @@
 
 
 
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.3.1</div>
+  <div class="powered-by">Erstellt mit  <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.3.1</div>
 
 
 
@@ -768,7 +834,7 @@
 
 
 
-  <div class="theme-info">Tema – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.0</div>
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.0</div>
 
 
 
